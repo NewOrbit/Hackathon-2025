@@ -6,12 +6,12 @@ from typing import Dict, Any, List
 from dataclasses import asdict
 from datetime import datetime
 
-from .config import DEFAULT_SEARCH_LIMIT, ATTRACTION_CATEGORIES
-from .models import (
+from config import DEFAULT_SEARCH_LIMIT, ATTRACTION_CATEGORIES
+from models import (
     AttractionDetails, BookingRequest, BookingResponse, 
     AttractionsList, SearchFilters
 )
-from .utils import (
+from utils import (
     get_attraction_by_id, search_attractions, get_random_famous_attraction,
     get_random_india_attraction, get_wonders_of_world, parse_attraction_data,
     format_attraction_name, get_category_display_name, generate_booking_id,
@@ -119,34 +119,46 @@ def get_random_attraction_data(region: str = "famous") -> Dict[str, Any]:
         return {"error": f"Failed to get random attraction: {str(e)}"}
 
 
-def get_world_wonders_data() -> Dict[str, Any]:
-    """Get list of world wonders attractions
+def get_world_wonders_data() -> str:
+    """Get list of world wonders attractions as formatted string
     
     Returns:
-        AttractionsList object as dictionary or error dict
+        Formatted string with world wonders attractions
     """
     try:
         data = get_wonders_of_world()
         if not data:
-            return {"error": "No world wonders found"}
+            return "Error: No world wonders found"
         
         attractions = []
-        if "wonders" in data:
-            for item in data["wonders"]:
+        if "attractions" in data:
+            for item in data["attractions"]:
                 attraction = parse_attraction_data(item)
                 attractions.append(attraction)
         
-        wonders_list = AttractionsList(
-            category="Wonders of the World",
-            location="Worldwide",
-            total_count=len(attractions),
-            attractions=attractions
-        )
+        result = "🌟 **Wonders of the World**\n\n"
+        result += f"Total Wonders: {len(attractions)}\n\n"
         
-        return asdict(wonders_list)
+        for i, attraction in enumerate(attractions, 1):
+            location_str = f"{attraction.location.city}, {attraction.location.country}" if attraction.location.city else attraction.location.country
+            
+            result += f"{i}. 🏛️ **{attraction.name}**\n"
+            result += f"   📍 {location_str}\n"
+            result += f"   🏷️ {get_category_display_name(attraction.category)}\n"
+            
+            if attraction.rating:
+                result += f"   ⭐ {attraction.rating}/5.0\n"
+            if attraction.entry_fee:
+                result += f"   💰 {attraction.entry_fee}\n"
+            if attraction.description:
+                result += f"   📝 {attraction.description}\n"
+            
+            result += "\n"
+        
+        return result
         
     except Exception as e:
-        return {"error": f"Failed to get world wonders: {str(e)}"}
+        return f"Error: Failed to get world wonders: {str(e)}"
 
 
 def book_attraction_data(
@@ -216,20 +228,24 @@ def book_attraction_data(
         return {"error": f"Failed to book attraction: {str(e)}"}
 
 
-def get_attraction_categories_data() -> Dict[str, Any]:
-    """Get list of available attraction categories
+def get_attraction_categories_data() -> str:
+    """Get list of available attraction categories as formatted string
     
     Returns:
-        Dictionary with category codes and display names
+        Formatted string with category codes and display names
     """
     try:
-        return {
-            "categories": ATTRACTION_CATEGORIES,
-            "total_categories": len(ATTRACTION_CATEGORIES)
-        }
+        result = "🏛️ **Available Attraction Categories**\n\n"
+        result += f"Total Categories: {len(ATTRACTION_CATEGORIES)}\n\n"
+        
+        for code, display_name in ATTRACTION_CATEGORIES.items():
+            result += f"• **{code}**: {display_name}\n"
+        
+        result += "\n*Use these category codes when searching for attractions.*"
+        return result
         
     except Exception as e:
-        return {"error": f"Failed to get categories: {str(e)}"}
+        return f"Error: Failed to get categories: {str(e)}"
 
 
 def format_attraction_resource(attraction_id: int) -> str:

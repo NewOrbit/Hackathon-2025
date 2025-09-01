@@ -5,8 +5,8 @@ Utility functions for weather operations.
 import requests
 from typing import Dict, Any, Optional
 
-from .config import WEATHER_CODES, GEOCODING_BASE_URL
-from .models import Coordinates, Location
+from config import WEATHER_CODES, GEOCODING_BASE_URL
+from models import Coordinates, Location
 
 
 def make_api_request(url: str, params: Dict[str, Any]) -> Dict[str, Any]:

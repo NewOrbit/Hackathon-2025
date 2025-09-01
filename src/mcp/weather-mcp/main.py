@@ -11,7 +11,7 @@ https://open-meteo.com/
 from typing import Dict, Any
 from mcp.server.fastmcp import FastMCP
 
-from .weather_service import (
+from weather_service import (
     get_current_weather_data, 
     get_weather_forecast_data,
     format_weather_resource,

@@ -5,12 +5,12 @@ Weather service with MCP tools and API logic.
 from typing import Dict, Any, List
 from dataclasses import asdict
 
-from .config import WEATHER_BASE_URL
-from .models import (
+from config import WEATHER_BASE_URL
+from models import (
     Temperature, Weather, Wind, Precipitation, CurrentWeather, 
     ForecastDay, WeatherForecast
 )
-from .utils import (
+from utils import (
     make_api_request, get_coordinates, format_location_name, 
     get_weather_description
 )

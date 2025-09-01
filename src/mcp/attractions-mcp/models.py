@@ -48,9 +48,9 @@ class BookingRequest:
     attraction_id: int
     visitor_name: str
     email: str
-    phone: Optional[str] = None
     visit_date: str
     num_visitors: int = 1
+    phone: Optional[str] = None
     special_requirements: Optional[str] = None
 
 

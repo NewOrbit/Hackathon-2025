@@ -8,10 +8,10 @@ Uses World Tourist Attractions API to provide information about tourist attracti
 and booking capabilities.
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from mcp.server.fastmcp import FastMCP
 
-from .attractions_service import (
+from attractions_service import (
     get_attraction_details_data,
     search_attractions_data, 
     get_random_attraction_data,
@@ -38,11 +38,10 @@ def get_attraction_details(attraction_id: int) -> Dict[str, Any]:
     """
     return get_attraction_details_data(attraction_id)
 
-
 @mcp.tool()
 def search_attractions(
-    location: str = None, 
-    category: str = None, 
+    location: Optional[str] = None, 
+    category: Optional[str] = None, 
     limit: int = 20
 ) -> Dict[str, Any]:
     """Search for tourist attractions with optional filters
@@ -57,7 +56,6 @@ def search_attractions(
     """
     return search_attractions_data(location, category, limit)
 
-
 @mcp.tool()
 def get_random_attraction(region: str = "famous") -> Dict[str, Any]:
     """Get a random tourist attraction for inspiration
@@ -70,17 +68,6 @@ def get_random_attraction(region: str = "famous") -> Dict[str, Any]:
     """
     return get_random_attraction_data(region)
 
-
-@mcp.tool()
-def get_world_wonders() -> Dict[str, Any]:
-    """Get list of the Wonders of the World attractions
-    
-    Returns:
-        AttractionsList object as dictionary with world wonders
-    """
-    return get_world_wonders_data()
-
-
 @mcp.tool()
 def book_attraction(
     attraction_id: int,
@@ -88,8 +75,8 @@ def book_attraction(
     email: str,
     visit_date: str,
     num_visitors: int = 1,
-    phone: str = None,
-    special_requirements: str = None
+    phone: Optional[str] = None,
+    special_requirements: Optional[str] = None
 ) -> Dict[str, Any]:
     """Book a visit to a tourist attraction
     
@@ -110,21 +97,10 @@ def book_attraction(
         num_visitors, phone, special_requirements
     )
 
-
-@mcp.tool()
-def get_attraction_categories() -> Dict[str, Any]:
-    """Get list of available attraction categories for filtering
-    
-    Returns:
-        Dictionary with category codes and display names
-    """
-    return get_attraction_categories_data()
-
-
 @mcp.tool()
 def search_and_format_attractions(
-    location: str = None,
-    category: str = None,
+    location: Optional[str] = None,
+    category: Optional[str] = None,
     limit: int = 10
 ) -> str:
     """Search for attractions and return formatted results for easy reading
@@ -143,13 +119,11 @@ def search_and_format_attractions(
     search_data = search_attractions_data(location, category, limit)
     return format_search_results(search_data)
 
-
 # resources  
 @mcp.resource("attraction://{attraction_id}")
 def get_attraction_resource(attraction_id: int) -> str:
     """Get attraction information as a formatted resource"""
     return format_attraction_resource(attraction_id)
-
 
 @mcp.resource("attractions://search/{location}")
 def get_attractions_by_location_resource(location: str) -> str:
@@ -157,19 +131,33 @@ def get_attractions_by_location_resource(location: str) -> str:
     search_data = search_attractions_data(location=location, limit=10)
     return format_search_results(search_data)
 
-
 @mcp.resource("attractions://category/{category}")
 def get_attractions_by_category_resource(category: str) -> str:
     """Get attractions by category as a formatted resource"""
     search_data = search_attractions_data(category=category, limit=10)
     return format_search_results(search_data)
 
+@mcp.resource("attractions://category")
+def get_attractions() -> str:
+    """Get 10 attractions by formatted resource"""
+    search_data = search_attractions_data(limit=10)
+    return format_search_results(search_data)
+
+@mcp.resource("attractions://categories")
+def get_attraction_categories_resource() -> str:
+    """Get list of available attraction categories as a formatted resource"""
+    return get_attraction_categories_data()
+
+@mcp.resource("attractions://wonders")
+def get_world_wonders_resource() -> str:
+    """Get list of the Wonders of the World attractions as a formatted resource"""
+    return get_world_wonders_data()
+
 # prompts
 @mcp.prompt()
-def attraction_booking_prompt(location: str, category: str = None) -> str:
+def attraction_booking_prompt(location: str, category: Optional[str] = None) -> str:
     """Generate a prompt for attraction booking assistance"""
     return get_booking_summary_prompt(location, category)
-
 
 @mcp.prompt()
 def travel_planning_prompt(location: str, days: int = 3) -> str:
@@ -184,7 +172,6 @@ def travel_planning_prompt(location: str, days: int = 3) -> str:
 7. Alternative attractions if main ones are crowded
 
 Focus on creating a balanced mix of historical, cultural, and recreational activities suitable for different interests."""
-
 
 @mcp.prompt()
 def attraction_comparison_prompt(attraction_ids: str) -> str:

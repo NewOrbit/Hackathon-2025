@@ -8,8 +8,8 @@ import string
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timedelta
 
-from .config import ATTRACTIONS_BASE_URL, ENDPOINTS, ATTRACTION_CATEGORIES
-from .models import Coordinates, Location, Attraction
+from config import ATTRACTIONS_BASE_URL, ENDPOINTS, ATTRACTION_CATEGORIES, MOCK_ATTRACTIONS, WORLD_WONDERS
+from models import Coordinates, Location, Attraction
 
 
 def make_api_request(url: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
@@ -23,12 +23,11 @@ def make_api_request(url: str, params: Optional[Dict[str, Any]] = None) -> Dict[
 
 
 def get_attraction_by_id(attraction_id: int) -> Optional[Dict[str, Any]]:
-    """Get attraction details by ID from the API"""
-    url = f"{ATTRACTIONS_BASE_URL}{ENDPOINTS['attraction_by_id']}/{attraction_id}"
-    try:
-        return make_api_request(url)
-    except Exception:
-        return None
+    """Get attraction details by ID from mock data"""
+    for attraction in MOCK_ATTRACTIONS:
+        if attraction["id"] == attraction_id:
+            return attraction
+    return None
 
 
 def search_attractions(
@@ -36,46 +35,60 @@ def search_attractions(
     category: Optional[str] = None,
     limit: int = 20
 ) -> Optional[Dict[str, Any]]:
-    """Search for attractions with filters"""
-    url = f"{ATTRACTIONS_BASE_URL}{ENDPOINTS['search']}"
-    params = {"limit": limit}
+    """Search for attractions with filters using mock data"""
+    filtered_attractions = []
     
-    if location:
-        params["location"] = location
-    if category:
-        params["category"] = category
+    for attraction in MOCK_ATTRACTIONS:
+        # Filter by location (check city, country, or region)
+        location_match = True
+        if location:
+            location_lower = location.lower()
+            attr_location = attraction["location"]
+            location_match = (
+                location_lower in attr_location.get("city", "").lower() or
+                location_lower in attr_location.get("country", "").lower() or
+                location_lower in attr_location.get("region", "").lower()
+            )
         
-    try:
-        return make_api_request(url, params)
-    except Exception:
-        return None
+        # Filter by category
+        category_match = True
+        if category:
+            category_match = attraction["category"] == category.lower()
+            
+        if location_match and category_match:
+            filtered_attractions.append(attraction)
+    
+    # Apply limit
+    filtered_attractions = filtered_attractions[:limit]
+    
+    return {
+        "attractions": filtered_attractions,
+        "total": len(filtered_attractions)
+    }
 
 
 def get_random_famous_attraction() -> Optional[Dict[str, Any]]:
-    """Get a random famous attraction"""
-    url = f"{ATTRACTIONS_BASE_URL}{ENDPOINTS['random_famous']}"
-    try:
-        return make_api_request(url)
-    except Exception:
-        return None
+    """Get a random famous attraction from mock data"""
+    if MOCK_ATTRACTIONS:
+        return random.choice(MOCK_ATTRACTIONS)
+    return None
 
 
 def get_random_india_attraction() -> Optional[Dict[str, Any]]:
-    """Get a random tourist attraction in India"""
-    url = f"{ATTRACTIONS_BASE_URL}{ENDPOINTS['random_india']}"
-    try:
-        return make_api_request(url)
-    except Exception:
-        return None
+    """Get a random tourist attraction in India from mock data"""
+    indian_attractions = [attr for attr in MOCK_ATTRACTIONS if attr["location"]["country"] == "India"]
+    if indian_attractions:
+        return random.choice(indian_attractions)
+    return None
 
 
 def get_wonders_of_world() -> Optional[Dict[str, Any]]:
-    """Get wonders of the world attractions"""
-    url = f"{ATTRACTIONS_BASE_URL}{ENDPOINTS['wonders']}"
-    try:
-        return make_api_request(url)
-    except Exception:
-        return None
+    """Get wonders of the world attractions from mock data"""
+    wonders = [attr for attr in MOCK_ATTRACTIONS if attr["id"] in WORLD_WONDERS]
+    return {
+        "attractions": wonders,
+        "total": len(wonders)
+    }
 
 
 def parse_coordinates(lat: float, lon: float) -> Coordinates:
