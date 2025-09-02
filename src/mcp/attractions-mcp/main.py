@@ -23,7 +23,7 @@ from attractions_service import (
     format_search_results
 )
 
-mcp = FastMCP("Tourist Attractions")
+mcp = FastMCP("Tourist Attractions", port=8008)
 
 # tools
 @mcp.tool()
@@ -187,3 +187,6 @@ def attraction_comparison_prompt(attraction_ids: str) -> str:
 8. Personal recommendations based on different travel styles
 
 Help decide which attractions to prioritize based on time, budget, and interests."""
+
+if __name__ == "__main__":
+    mcp.run("streamable-http")

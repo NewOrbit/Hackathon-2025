@@ -1,0 +1,20 @@
+# Data science and notebook
+jupyter
+numpy
+pandas
+
+# LangChain and LLM integration (latest versions)
+langchain>=0.3.27
+langchain-openai>=0.2.8
+langchain-community>=0.3.27
+openai>=1.54.0
+
+# MCP integration
+mcp[cli]>=1.13.1
+langchain-mcp-adapters>=0.1.0
+requests>=2.31.0
+
+# Additional utilities
+python-dotenv>=1.0.0
+httpx>=0.26.0
+dotenv>=0.9.9
