@@ -24,7 +24,6 @@ from mcp.server.fastmcp import FastMCP
 from typing import Any, Dict, List, Optional
 from restaurant_service import (
     search_restaurants as search_restaurants_service,
-    get_restaurant_by_id,
     get_restaurant_menu,
 )
 
@@ -64,23 +63,6 @@ def search_restaurants(
 
 
 @mcp.tool()
-def get_restaurant_details(restaurant_id: str) -> Dict[str, Any]:
-    """Get detailed information about a specific restaurant
-
-    Args:
-        restaurant_id: The ID of the restaurant to get details for
-
-    Returns:
-        Detailed restaurant information
-    """
-    restaurant = get_restaurant_by_id(restaurant_id)
-    if restaurant:
-        return restaurant
-    else:
-        return {"error": f"Restaurant not found"}
-
-
-@mcp.resource("restaurant://{restaurant_id}")
 def get_menu(restaurant_id: str) -> Dict[str, Any]:
     """Get menu for a specific restaurant
 

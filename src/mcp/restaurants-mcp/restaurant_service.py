@@ -89,29 +89,12 @@ def get_restaurant_menu(restaurant_id: str) -> Optional[Dict[str, Any]]:
         return None
     
     # Return menu from config if available
-    if restaurant_id in MOCK_MENUS:
-        return MOCK_MENUS[restaurant_id]
-    
-    # Fallback to generic menu if specific menu not found
-    return {
-        "restaurant_id": restaurant_id,
-        "restaurant_name": restaurant.get("name"),
-        "menu_items": [
-            {
-                "id": f"item_{restaurant_id}_001",
-                "name": "House Special",
-                "description": "Chef's recommended dish",
-                "price": restaurant.get("average_price", 25.0) * 0.8,
-                "category": "main",
-                "dietary_info": []
-            },
-            {
-                "id": f"item_{restaurant_id}_002", 
-                "name": "Popular Choice",
-                "description": "Customer favorite",
-                "price": restaurant.get("average_price", 25.0) * 1.2,
-                "category": "main",
-                "dietary_info": []
-            }
-        ]
-    }
+    return get_menu_items_by_restaurant(restaurant_id)
+
+
+def get_menu_items_by_restaurant(restaurant_id: str) -> Dict[str, Any]:
+    """Get all menu items for a specific restaurant"""
+    for menu in MOCK_MENUS:
+        if menu["restaurant_id"] == restaurant_id:
+            return menu
+    return None
