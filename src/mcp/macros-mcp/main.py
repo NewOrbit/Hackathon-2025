@@ -21,7 +21,7 @@ from nutrition_service import (
 
 load_dotenv()
 
-mcp = FastMCP("Macros", port=8014)
+mcp = FastMCP("Macros", port=8010)
 
 
 @mcp.tool()
