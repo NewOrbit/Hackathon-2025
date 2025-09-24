@@ -1,0 +1,10 @@
+[project]
+name = "booking-mcp"
+version = "0.1.0"
+description = "Mock booking MCP server"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=0.2.0",
+    "fastmcp>=0.4.0",
+]
+

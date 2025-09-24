@@ -1,0 +1,2 @@
+"""Booking MCP package."""
+

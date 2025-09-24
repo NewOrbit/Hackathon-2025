@@ -20,7 +20,9 @@ Build an AI assistant that generates an optimized travel packing list and option
 
 ## Functional Requirements
 - **Input collection**: destination(s), dates, trip length, activities (day/night, hiking, formal, beach, business), transport (flight/airline), accommodations, personal preferences (laundry, style), constraints (capacity in L, max weight, budget), and known documents.
+  - Agent now collects these interactively in chat mode before generating advice, and auto-extracts details (origin city, destination, start date) from natural language.
 - **Onboarding questions**: explicitly ask for backpack capacity (L), maximum comfortable carry weight (kg), airline/route, cabin class, mobility/health limitations (e.g., knee issues, need for meds), liquid constraints, and laundry availability.
+  - Chat flow prompts for number of adults, children, infants, and pets, confirming each before proceeding.
 - **Weather intake**: fetch current and forecast weather (reuse `weather` MCP) for relevant dates.
 - **Attractions intake**: optional attraction plans (reuse `attractions` MCP) to bias item categories (e.g., museum vs hiking).
 - **Regulatory checks**: identify prohibited/restricted items (airport), visa requirements, passport validity, entry paperwork, vaccinations where applicable.
@@ -30,7 +32,9 @@ Build an AI assistant that generates an optimized travel packing list and option
 - **Explainability**: show which constraints and data influenced each recommendation.
 - **Item categorization and filters**: classify each item by safety status (safe/restricted/prohibited), priority (must-have/nice-to-have), weight class (light/medium/heavy), and category (clothing/toiletries/electronics/documents/health/accessories). Allow filtering/sorting and provide totals per class.
 - **Keep-it-simple mode**: output a minimal, printable checklist (plain text/markdown) with only item names, quantities, and a short high-priority notes section. Skip long explanations and avoid non-essential tool calls.
+  - CLI `simple` command now uses `simple_checklist` responses.
 - **Budgeting and costs (Phase 1.5)**: capture user budgets (overall, per-category like clothing/toiletries, and per booking type), estimate packing vs buy-at-destination tradeoffs, compute baggage fees risk based on weight/size, and include price ranges from mocked MCPs in summaries.
+  - Status: implementation in progress with mocked data; live integrations deferred to Phase 2.
 
 ## Non-Functional Requirements
 - **Safety**: never perform bookings without explicit user confirmation. Flag uncertainties and provide sources for regulatory advice.
@@ -40,6 +44,7 @@ Build an AI assistant that generates an optimized travel packing list and option
 - **Token efficiency**: cap max tokens per response, summarize chat history aggressively, truncate irrelevant memory, and limit tool-call fan-out. Prefer structured terse outputs in keep-it-simple mode. Refuse off-topic tasks to avoid token waste.
 - **Scope/guardrails**: the assistant is strictly for travel planning/packing. Politely refuse unrelated domains; avoid medical/legal advice beyond linking to official sources; disallow dangerous or disallowed items; rate-limit excessively long prompts and enforce message length caps.
 - **Offline-first (Phase 1)**: default to strict offline/mock mode with zero external HTTP. Any attempt to call live endpoints should raise a clear error.
+- **LLM integration**: DeepseekTravels defaults to the LangChain Azure OpenAI agent whenever required env vars are set; falls back to deterministic mock engine otherwise. System prompt resides in `src/agent/prompts/system_prompt.txt` and includes interactive onboarding instructions. MCP endpoints for weather, attractions, and travel requirements are configurable via environment variables.
 
 ## Architecture Overview (patterned after `src/agent/attractions.ipynb`)
 Replicate the notebook structure with analogous cells:
@@ -63,7 +68,7 @@ Reuse existing:
 - `attractions-mcp`: optional for itinerary-driven packing
 
 Add new MCPs:
-**Phase 1 HTTP policy:** All external HTTP calls MUST be mocked. MCP servers run in stub/offline mode with deterministic fixtures; no outbound network calls are permitted in Phase 1.
+- **Phase 1 HTTP policy**: Maintain deterministic behavior by standing up mock MCP servers for weather, requirements, and booking. Only budgeting still relies on in-process fixtures; a future `budgeting-mcp` will complete MCP coverage.
 1) `travel-requirements-mcp` (HTTP)
    - **Purpose**: Validate airport security restrictions, baggage rules, visas, documents.
    - Tools:
@@ -71,6 +76,7 @@ Add new MCPs:
      - `check_baggage_allowance(airline, cabin_class, route, fare_brand)` → size, linear dimensions, weight limits, personal item policy, references.
      - `get_visa_requirements(nationality, destination_country, transit_countries, stay_length_days, purpose)` → visas/ESTA/eTA, passport validity, entry docs, references.
      - `get_documents_checklist(destination_country, nationality, minors_traveling, driving, insurance)` → documents and recommended paperwork.
+   - **Status**: Implemented in `src/mcp/requirements-mcp` with mock fixtures identical to the in-app mock client. Connected through `MultiServerMCPClient` for both CLI fallback and LangChain agent paths.
 
 2) `booking-mcp` (HTTP)
    - **Purpose**: Search and propose bookings; perform booking only with explicit confirmation.
@@ -80,6 +86,7 @@ Add new MCPs:
      - `search_activities(destination, dates, interests, budget)`
      - `hold_booking(booking_type, booking_payload)` → returns hold ID and expiration; requires confirmation step.
      - `confirm_booking(hold_id, payment_token_or_redirect)` → only after user says “confirm”.
+   - **Status**: Implemented in `src/mcp/booking-mcp` and accessed via MCP throughout the application.
 
 Data contracts (illustrative JSON schemas):
 
@@ -122,6 +129,7 @@ Data contracts (illustrative JSON schemas):
 ## Packing Logic and Constraints
 - **Trip length scaling**: base quantities with diminishing increments and laundry factor (e.g., shirts = ceil(tripDays/2) with laundry once).
 - **Time of day**: add night items (headlamp, reflective layer, evening wear), sun items for daytime (sunglasses, sunscreen).
+- **Short trips**: for sub-day or single-day daytime outings, skip multi-day essentials (e.g., multiple socks/underwear) unless users opt in or overnight usage is stated.
 - **Weather**: from forecast; choose layers, rain gear, insulation; heat adds hydration kit and light fabrics.
 - **Activities**: hiking → boots, socks, poles; beach → swimwear, quick-dry towel; business → formal attire.
 - **Transport**: airline baggage allowance and security rules filter/flag items; auto-replace oversized liquids with travel-size.
