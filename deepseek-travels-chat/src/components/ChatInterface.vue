@@ -5,16 +5,6 @@
         <h1>🧳 DeepseekTravels</h1>
         <p>Your intelligent travel packing assistant</p>
       </div>
-      <div class="server-status">
-        <div 
-          v-for="server in serverStatus" 
-          :key="server.name"
-          :class="['status-indicator', server.status]"
-          :title="`${server.name}: ${server.status}`"
-        >
-          {{ server.name.charAt(0).toUpperCase() }}
-        </div>
-      </div>
     </header>
 
     <div class="chat-messages" ref="messagesContainer">
@@ -84,11 +74,6 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, computed } from 'vue'
 import type { ChatMessage, MCPServerConfig } from '@/types/chat'
-import { useChatService } from '@/services/chatService'
-import { useServerStatus } from '@/composables/useServerStatus'
-
-const chatService = useChatService()
-const { serverStatus, checkServerStatus } = useServerStatus()
 
 const messages = ref<ChatMessage[]>([])
 const currentInput = ref('')
@@ -150,7 +135,14 @@ const sendMessage = async (text: string = currentInput.value) => {
   await scrollToBottom()
 
   try {
-    const response = await chatService.sendMessage(text)
+    const response = await fetch('http://localhost:8000/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text.trim() })
+    }).then(res => {
+      if (!res.ok) throw new Error(`Server error: ${res.statusText}`)
+      return res.json()
+    }).then(data => data.response as string);
     
     // Remove loading message and add actual response
     messages.value.pop()
@@ -187,7 +179,6 @@ const handleSubmit = () => {
 }
 
 onMounted(() => {
-  checkServerStatus()
   inputRef.value?.focus()
 })
 </script>
