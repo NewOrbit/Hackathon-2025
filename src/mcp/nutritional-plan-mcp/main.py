@@ -9,7 +9,7 @@ from mcp.server.fastmcp import FastMCP
 from plan_service import UserProfile, plan_calories, build_text_plan
 
 
-mcp = FastMCP("NutritionalPlan", port=8011)
+mcp = FastMCP("NutritionalPlan", port=8013)
 
 
 @mcp.tool()
