@@ -65,6 +65,10 @@ def macros_summary_prompt(description: str, target_calories: Optional[int] = Non
         return base + f" Then suggest a portion to target approximately {target_calories} kcal."
     return base
 
+@mcp.prompt()
+def macros_for_a_dish_prompt(dish_name: str) -> str:
+    """Generate a prompt to describe the macronutrient profile of a dish."""
+    return f"Describe the macronutrient profile of {dish_name}."
 
 if __name__ == "__main__":
     mcp.run("streamable-http")

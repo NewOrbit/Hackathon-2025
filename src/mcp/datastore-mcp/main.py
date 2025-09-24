@@ -110,5 +110,52 @@ def memory_summary_prompt(namespace: str = "default", objective: Optional[str] =
     lines.append("Use these stored items as context; retrieve more with tools if needed.")
     return "\n".join(lines)
 
+@mcp.prompt()
+def retrieve_data_prompt(
+    user_request: str,
+    namespace: str = "default",
+    today_iso: Optional[str] = None
+) -> str:
+    """
+    Guide the model to decide which datastore operations to perform
+    to satisfy a retrieval-style user request (e.g., 'today's meal plan').
+
+    user_request: The original natural language query from the user.
+    namespace: Namespace to inspect.
+    today_iso: Pass in today's date (YYYY-MM-DD) so the model doesn't hallucinate.
+    strategy: Retrieval heuristic name (future extension).
+    """
+    listing = datastore.list_keys(namespace)
+    keys = listing.get("keys", [])
+    lines = []
+    lines.append("You are planning data retrieval from a persistent key-value store.")
+    lines.append(f"User request: {user_request}")
+    if today_iso:
+        lines.append(f"Today's date (ISO): {today_iso}")
+    lines.append(f"Namespace: {namespace}")
+    lines.append(f"Available key count: {listing.get('count', 0)}")
+    # Show a limited slice only (avoid huge prompt)
+    preview = keys[:100]
+    lines.append("Keys:")
+    for k in preview:
+        lines.append(f"- {k}")
+    if len(keys) > len(preview):
+        lines.append(f"... ({len(keys) - len(preview)} more not shown)")
+    lines.append("")
+    lines.append("Retrieval Guidelines:")
+    lines.append("1. Derive candidate key names from the user request (e.g., date-based).")
+    lines.append("2. If an exact key match exists, plan to call: read_data(key=<key>, namespace=<namespace>).")
+    lines.append("3. If multiple partial matches (e.g. all keys containing today's date), pick the most specific; if unsure, call dump_namespace with a limit.")
+    lines.append("4. If NO relevant key, respond with PLAN:NOT_FOUND (do not fabricate data).")
+    lines.append("5. Do NOT invent keys; only use keys listed above.")
+    lines.append("")
+    lines.append("Respond ONLY with a PLAN block in one of these forms:")
+    lines.append("PLAN:READ key=<existing_key> namespace=<namespace>")
+    lines.append("PLAN:DUMP namespace=<namespace> limit=<=20")
+    lines.append("PLAN:NOT_FOUND")
+    lines.append("")
+    lines.append("Do not include any other explanatory text.")
+    return '\\n'.join(lines)
+
 if __name__ == "__main__":
     mcp.run("streamable-http")
