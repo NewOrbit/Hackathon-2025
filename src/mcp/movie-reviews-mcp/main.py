@@ -40,6 +40,7 @@ def get_movie_details(movie_id: int) -> Dict[str, Any]:
 
 @mcp.tool()
 def search_movies(
+    title: Optional[str] = None,
     genre: Optional[str] = None,
     limit: int = 20
 ) -> Dict[str, Any]:
@@ -52,7 +53,7 @@ def search_movies(
     Returns:
         MoviesList object as dictionary with matching movies
     """
-    return search_movies_data(genre, limit)
+    return search_movies_data(title, genre, limit)
 
 @mcp.tool()
 def get_random_movie() -> Dict[str, Any]:

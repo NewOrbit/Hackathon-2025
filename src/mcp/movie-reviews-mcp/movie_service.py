@@ -22,6 +22,7 @@ from utils import (
 
 
 def search_movies_data(
+    title: str = None,
     genre: str = None,
     limit: int = DEFAULT_SEARCH_LIMIT
 ) -> Dict[str, Any]:
@@ -40,7 +41,7 @@ def search_movies_data(
         elif limit < 1:
             limit = 1
 
-        data = search_movies(genre, limit)
+        data = search_movies(title, genre, limit)
         if not data:
             return {"error": "No movies found matching the criteria"}
 

@@ -31,6 +31,7 @@ def get_movie_by_id(movie_id: int) -> Optional[Dict[str, Any]]:
 
 
 def search_movies(
+    title: Optional[str] = None,
     genre: Optional[str] = None,
     limit: int = 20
 ) -> Optional[Dict[str, Any]]:
@@ -44,7 +45,12 @@ def search_movies(
         if genre:
             genre_match = movie["genres"] == genre.lower()
 
-        if genre_match:
+        # Filter by title
+        title_match = True
+        if title:
+            title_match = title.lower() in movie["title"].lower()
+
+        if genre_match and title_match:
             filtered_movies.append(movie)
 
     # Apply limit
