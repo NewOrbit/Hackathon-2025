@@ -2,49 +2,17 @@
 Tourist attractions MCP configuration mocks data.
 """
 
-# World Tourist Attractions API configuration
-ATTRACTIONS_BASE_URL = "https://www.world-tourist-attractions-api.com"
-API_VERSION = "v1"
-
-# API Endpoints
-ENDPOINTS = {
-    "attraction_by_id": f"/api/{API_VERSION}/attraction",
-    "random_famous": f"/api/{API_VERSION}/random/famous",
-    "random_india": f"/api/{API_VERSION}/random/india", 
-    "wonders": f"/api/{API_VERSION}/wonders",
-    "search": f"/api/{API_VERSION}/search",
-    "categories": f"/api/{API_VERSION}/categories"
-}
-
-# Attraction categories
-ATTRACTION_CATEGORIES = {
-    "historical": "Historical Sites",
-    "natural": "Natural Wonders", 
-    "cultural": "Cultural Sites",
-    "religious": "Religious Sites",
-    "modern": "Modern Attractions",
-    "museums": "Museums",
-    "parks": "Parks & Gardens",
-    "beaches": "Beaches",
-    "mountains": "Mountains",
-    "architecture": "Architecture",
-    "entertainment": "Entertainment",
-    "adventure": "Adventure Sports"
-}
-
-# Popular countries/regions
-POPULAR_REGIONS = [
-    "India", "France", "Italy", "Spain", "Greece", "Egypt", 
-    "Thailand", "Japan", "China", "USA", "UK", "Germany",
-    "Turkey", "Morocco", "Brazil", "Peru", "Australia"
-]
-
-# Booking status codes
-BOOKING_STATUS = {
-    "pending": "Pending Confirmation",
-    "confirmed": "Confirmed", 
-    "cancelled": "Cancelled",
-    "completed": "Completed"
+MOVIE_GENRES = {
+    "action": "Action",
+    "comedy": "Comedy",
+    "drama": "Drama",
+    "horror": "Horror",
+    "romance": "Romance",
+    "thriller": "Thriller",
+    "sci-fi": "Science Fiction",
+    "fantasy": "Fantasy",
+    "documentary": "Documentary",
+    "animation": "Animation"
 }
 
 # Default values
@@ -53,188 +21,165 @@ MAX_SEARCH_LIMIT = 100
 DEFAULT_RATING_MIN = 3.0
 
 # Mock attractions data for demonstration
-MOCK_ATTRACTIONS = [
+MOCK_MOVIES = [
     {
         "id": 1,
-        "name": "Eiffel Tower",
-        "description": "Iconic iron lattice tower located on the Champ de Mars in Paris, France",
-        "category": "architecture",
-        "location": {"city": "Paris", "country": "France", "region": "Île-de-France"},
-        "rating": 4.6,
-        "image_url": "https://example.com/eiffel-tower.jpg",
-        "website": "https://www.toureiffel.paris",
-        "opening_hours": "9:30 AM - 11:45 PM",
-        "entry_fee": "€29.40 - €73.30"
+        "title": "Inception",
+        "synopsis": "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
+        "rating": 8.8,
+        "durationMins": 148,
+        "genre": "sci-fi"
     },
     {
         "id": 2,
-        "name": "Taj Mahal",
-        "description": "Ivory-white marble mausoleum on the right bank of the river Yamuna in Agra",
-        "category": "historical",
-        "location": {"city": "Agra", "country": "India", "region": "Uttar Pradesh"},
-        "rating": 4.8,
-        "image_url": "https://example.com/taj-mahal.jpg",
-        "website": "https://www.tajmahal.gov.in",
-        "opening_hours": "6:00 AM - 7:00 PM",
-        "entry_fee": "₹1100 (foreigners), ₹50 (Indians)"
+        "title": "The Godfather",
+        "synopsis": "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
+        "rating": 9.2,
+        "durationMins": 175,
+        "genre": "drama"
     },
     {
         "id": 3,
-        "name": "Colosseum",
-        "description": "Ancient Roman amphitheater in the center of Rome, Italy",
-        "category": "historical",
-        "location": {"city": "Rome", "country": "Italy", "region": "Lazio"},
-        "rating": 4.5,
-        "image_url": "https://example.com/colosseum.jpg",
-        "website": "https://www.coopculture.it",
-        "opening_hours": "8:30 AM - 7:15 PM",
-        "entry_fee": "€16 - €22"
+        "title": "The Dark Knight",
+        "synopsis": "When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham. The Dark Knight must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
+        "rating": 9.0,
+        "durationMins": 152,
+        "genre": "action"
     },
     {
         "id": 4,
-        "name": "Machu Picchu",
-        "description": "Ancient Incan city set high in the Andes Mountains of Peru",
-        "category": "historical",
-        "location": {"city": "Cusco", "country": "Peru", "region": "Cusco"},
-        "rating": 4.9,
-        "image_url": "https://example.com/machu-picchu.jpg",
-        "website": "https://www.machupicchu.gob.pe",
-        "opening_hours": "6:00 AM - 5:30 PM",
-        "entry_fee": "$47 - $62"
+        "title": "Pulp Fiction",
+        "synopsis": "The lives of two mob hitmen, a boxer, a gangster's wife, and a pair of diner bandits intertwine in four tales of violence and redemption.",
+        "rating": 8.9,
+        "durationMins": 154,
+        "genre": "crime"
     },
     {
         "id": 5,
-        "name": "Louvre Museum",
-        "description": "World's largest art museum and historic monument in Paris",
-        "category": "museums",
-        "location": {"city": "Paris", "country": "France", "region": "Île-de-France"},
-        "rating": 4.4,
-        "image_url": "https://example.com/louvre.jpg",
-        "website": "https://www.louvre.fr",
-        "opening_hours": "9:00 AM - 6:00 PM",
-        "entry_fee": "€17"
+        "title": "Forrest Gump",
+        "synopsis": "The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with a low IQ.",
+        "rating": 8.8,
+        "durationMins": 142,
+        "genre": "drama"
     },
     {
         "id": 6,
-        "name": "Great Wall of China",
-        "description": "Ancient fortification built across northern China",
-        "category": "historical",
-        "location": {"city": "Beijing", "country": "China", "region": "Beijing"},
-        "rating": 4.7,
-        "image_url": "https://example.com/great-wall.jpg",
-        "website": "https://www.mutianyu.com",
-        "opening_hours": "7:30 AM - 5:30 PM",
-        "entry_fee": "¥45 - ¥65"
+        "title": "Interstellar",
+        "synopsis": "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
+        "rating": 8.6,
+        "durationMins": 169,
+        "genre": "sci-fi"
     },
     {
         "id": 7,
-        "name": "Santorini",
-        "description": "Beautiful Greek island with white buildings and blue domes",
-        "category": "natural",
-        "location": {"city": "Santorini", "country": "Greece", "region": "Cyclades"},
-        "rating": 4.6,
-        "image_url": "https://example.com/santorini.jpg",
-        "website": "https://www.santorini.com",
-        "opening_hours": "24/7",
-        "entry_fee": "Free"
+        "title": "Parasite",
+        "synopsis": "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.",
+        "rating": 8.6,
+        "durationMins": 132,
+        "genre": "thriller"
     },
     {
         "id": 8,
-        "name": "Angkor Wat",
-        "description": "Largest religious monument in the world, originally a Hindu temple",
-        "category": "religious",
-        "location": {"city": "Siem Reap", "country": "Cambodia", "region": "Siem Reap"},
-        "rating": 4.8,
-        "image_url": "https://example.com/angkor-wat.jpg",
-        "website": "https://www.angkorwat.com",
-        "opening_hours": "5:00 AM - 6:00 PM",
-        "entry_fee": "$37 (1 day), $62 (3 days)"
+        "title": "Schindler's List",
+        "synopsis": "In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.",
+        "rating": 8.9,
+        "durationMins": 195,
+        "genre": "history"
     },
     {
         "id": 9,
-        "name": "Central Park",
-        "description": "Large public park in Manhattan, New York City",
-        "category": "parks",
-        "location": {"city": "New York", "country": "USA", "region": "New York"},
-        "rating": 4.3,
-        "image_url": "https://example.com/central-park.jpg",
-        "website": "https://www.centralparknyc.org",
-        "opening_hours": "6:00 AM - 1:00 AM",
-        "entry_fee": "Free"
+        "title": "The Shawshank Redemption",
+        "synopsis": "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+        "rating": 9.3,
+        "durationMins": 142,
+        "genre": "drama"
     },
     {
         "id": 10,
-        "name": "Petra",
-        "description": "Archaeological city famous for rock-cut architecture and water conduit system",
-        "category": "historical",
-        "location": {"city": "Ma'an", "country": "Jordan", "region": "Ma'an"},
-        "rating": 4.7,
-        "image_url": "https://example.com/petra.jpg",
-        "website": "https://www.visitpetra.jo",
-        "opening_hours": "6:00 AM - 6:00 PM",
-        "entry_fee": "70 JOD (1 day), 55 JOD (2 days)"
+        "title": "Spirited Away",
+        "synopsis": "During her family's move to the suburbs, a sullen 10-year-old girl wanders into a world ruled by gods, witches, and spirits, where humans are changed into beasts.",
+        "rating": 8.6,
+        "durationMins": 125,
+        "genre": "animation"
     },
     {
         "id": 11,
-        "name": "Statue of Liberty",
-        "description": "Neoclassical sculpture on Liberty Island in New York Harbor",
-        "category": "modern",
-        "location": {"city": "New York", "country": "USA", "region": "New York"},
-        "rating": 4.4,
-        "image_url": "https://example.com/statue-liberty.jpg",
-        "website": "https://www.nps.gov/stli",
-        "opening_hours": "8:30 AM - 4:00 PM",
-        "entry_fee": "$23.80 - $24.30"
+        "title": "Gladiator",
+        "synopsis": "A former Roman General sets out to exact vengeance against the corrupt emperor who murdered his family and sent him into slavery.",
+        "rating": 8.5,
+        "durationMins": 155,
+        "genre": "action"
     },
     {
         "id": 12,
-        "name": "Sagrada Familia",
-        "description": "Unfinished Roman Catholic minor basilica in Barcelona, Spain",
-        "category": "religious",
-        "location": {"city": "Barcelona", "country": "Spain", "region": "Catalonia"},
-        "rating": 4.6,
-        "image_url": "https://example.com/sagrada-familia.jpg",
-        "website": "https://sagradafamilia.org",
-        "opening_hours": "9:00 AM - 8:00 PM",
-        "entry_fee": "€26 - €40"
+        "title": "The Matrix",
+        "synopsis": "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
+        "rating": 8.7,
+        "durationMins": 136,
+        "genre": "sci-fi"
     },
     {
         "id": 13,
-        "name": "Kinkaku-ji",
-        "description": "Golden Pavilion, a Zen temple in Kyoto, Japan",
-        "category": "religious",
-        "location": {"city": "Kyoto", "country": "Japan", "region": "Kansai"},
-        "rating": 4.5,
-        "image_url": "https://example.com/kinkaku-ji.jpg",
-        "website": "https://www.shokoku-ji.jp",
-        "opening_hours": "9:00 AM - 5:00 PM",
-        "entry_fee": "¥500"
+        "title": "Fight Club",
+        "synopsis": "An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into something much more.",
+        "rating": 8.8,
+        "durationMins": 139,
+        "genre": "drama"
     },
     {
         "id": 14,
-        "name": "Sydney Opera House",
-        "description": "Multi-venue performing arts center in Sydney, Australia",
-        "category": "modern",
-        "location": {"city": "Sydney", "country": "Australia", "region": "New South Wales"},
-        "rating": 4.4,
-        "image_url": "https://example.com/sydney-opera.jpg",
-        "website": "https://www.sydneyoperahouse.com",
-        "opening_hours": "9:00 AM - 8:30 PM",
-        "entry_fee": "$43 - $175"
+        "title": "The Lord of the Rings: The Return of the King",
+        "synopsis": "Gandalf and Aragorn lead the World of Men against Sauron's army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.",
+        "rating": 8.9,
+        "durationMins": 201,
+        "genre": "fantasy"
     },
     {
         "id": 15,
-        "name": "Christ the Redeemer",
-        "description": "Art Deco statue of Jesus Christ in Rio de Janeiro, Brazil",
-        "category": "religious",
-        "location": {"city": "Rio de Janeiro", "country": "Brazil", "region": "Rio de Janeiro"},
-        "rating": 4.5,
-        "image_url": "https://example.com/christ-redeemer.jpg",
-        "website": "https://www.cristoredentor.com.br",
-        "opening_hours": "8:00 AM - 7:00 PM",
-        "entry_fee": "R$65 - R$98"
+        "title": "The Lion King",
+        "synopsis": "Lion prince Simba and his father are targeted by his bitter uncle, who wants to ascend the throne himself.",
+        "rating": 8.5,
+        "durationMins": 88,
+        "genre": "animation"
+    },
+    {
+        "id": 16,
+        "title": "Goodfellas",
+        "synopsis": "The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners.",
+        "rating": 8.7,
+        "durationMins": 146,
+        "genre": "crime"
+    },
+    {
+        "id": 17,
+        "title": "The Silence of the Lambs",
+        "synopsis": "A young F.B.I. cadet must receive the help of an incarcerated and manipulative cannibal killer to catch another serial killer.",
+        "rating": 8.6,
+        "durationMins": 118,
+        "genre": "thriller"
+    },
+    {
+        "id": 18,
+        "title": "Saving Private Ryan",
+        "synopsis": "Following the Normandy Landings, a group of U.S. soldiers go behind enemy lines to retrieve a paratrooper whose brothers have been killed in action.",
+        "rating": 8.6,
+        "durationMins": 169,
+        "genre": "war"
+    },
+    {
+        "id": 19,
+        "title": "The Prestige",
+        "synopsis": "After a tragic accident, two stage magicians engage in a battle to create the ultimate illusion while sacrificing everything they have to outwit each other.",
+        "rating": 8.5,
+        "durationMins": 130,
+        "genre": "mystery"
+    },
+    {
+        "id": 20,
+        "title": "Whiplash",
+        "synopsis": "A promising young drummer enrolls at a cut-throat music conservatory where his dreams of greatness are mentored by an instructor who will stop at nothing to realize a student's potential.",
+        "rating": 8.5,
+        "durationMins": 106,
+        "genre": "drama"
     }
 ]
-
-# World wonders mock data
-WORLD_WONDERS = [1, 2, 3, 4, 6, 8, 10, 15]  # IDs from MOCK_ATTRACTIONS that are world wonders

@@ -1,5 +1,5 @@
 """
-Utility functions for tourist attractions operations.
+Utility functions for tourist movies operations.
 """
 
 import requests
@@ -8,7 +8,7 @@ import string
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timedelta
 
-from config import ATTRACTIONS_BASE_URL, ENDPOINTS, ATTRACTION_CATEGORIES, MOCK_ATTRACTIONS, WORLD_WONDERS
+from config import MOVIE_GENRES, MOCK_MOVIES
 from models import Coordinates, Location, Attraction
 
 
@@ -22,73 +22,42 @@ def make_api_request(url: str, params: Optional[Dict[str, Any]] = None) -> Dict[
         raise Exception(f"API request failed: {str(e)}")
 
 
-def get_attraction_by_id(attraction_id: int) -> Optional[Dict[str, Any]]:
-    """Get attraction details by ID from mock data"""
-    for attraction in MOCK_ATTRACTIONS:
-        if attraction["id"] == attraction_id:
-            return attraction
+def get_movie_by_id(movie_id: int) -> Optional[Dict[str, Any]]:
+    """Get movie details by ID from mock data"""
+    for movie in MOCK_MOVIES:
+        if movie["id"] == movie_id:
+            return movie
     return None
 
 
-def search_attractions(
-    location: Optional[str] = None,
-    category: Optional[str] = None,
+def search_movies(
+    title: Optional[str] = None,
+    genre: Optional[str] = None,
     limit: int = 20
 ) -> Optional[Dict[str, Any]]:
-    """Search for attractions with filters using mock data"""
-    filtered_attractions = []
-    
-    for attraction in MOCK_ATTRACTIONS:
-        # Filter by location (check city, country, or region)
-        location_match = True
-        if location:
-            location_lower = location.lower()
-            attr_location = attraction["location"]
-            location_match = (
-                location_lower in attr_location.get("city", "").lower() or
-                location_lower in attr_location.get("country", "").lower() or
-                location_lower in attr_location.get("region", "").lower()
-            )
-        
-        # Filter by category
-        category_match = True
-        if category:
-            category_match = attraction["category"] == category.lower()
-            
-        if location_match and category_match:
-            filtered_attractions.append(attraction)
-    
+    """Search for movies with filters using mock data"""
+    filtered_movies = []
+
+    for movie in MOCK_MOVIES:
+
+        # Filter by genre
+        genre_match = True
+        if genre:
+            genre_match = movie["genre"] == genre.lower()
+
+        if genre_match:
+            filtered_movies.append(movie)
+
     # Apply limit
-    filtered_attractions = filtered_attractions[:limit]
-    
+    filtered_movies = filtered_movies[:limit]
+
     return {
-        "attractions": filtered_attractions,
-        "total": len(filtered_attractions)
+        "movies": filtered_movies,
+        "total": len(filtered_movies)
     }
 
 
-def get_random_famous_attraction() -> Optional[Dict[str, Any]]:
-    """Get a random famous attraction from mock data"""
-    if MOCK_ATTRACTIONS:
-        return random.choice(MOCK_ATTRACTIONS)
-    return None
 
-
-def get_random_india_attraction() -> Optional[Dict[str, Any]]:
-    """Get a random tourist attraction in India from mock data"""
-    indian_attractions = [attr for attr in MOCK_ATTRACTIONS if attr["location"]["country"] == "India"]
-    if indian_attractions:
-        return random.choice(indian_attractions)
-    return None
-
-
-def get_wonders_of_world() -> Optional[Dict[str, Any]]:
-    """Get wonders of the world attractions from mock data"""
-    wonders = [attr for attr in MOCK_ATTRACTIONS if attr["id"] in WORLD_WONDERS]
-    return {
-        "attractions": wonders,
-        "total": len(wonders)
-    }
 
 
 def parse_coordinates(lat: float, lon: float) -> Coordinates:
@@ -101,7 +70,7 @@ def parse_location_data(data: Dict[str, Any]) -> Location:
     coords = None
     if data.get("latitude") and data.get("longitude"):
         coords = parse_coordinates(data["latitude"], data["longitude"])
-    
+
     return Location(
         city=data.get("city", ""),
         country=data.get("country", ""),
@@ -110,15 +79,15 @@ def parse_location_data(data: Dict[str, Any]) -> Location:
     )
 
 
-def parse_attraction_data(data: Dict[str, Any]) -> Attraction:
-    """Parse attraction data from API response"""
+def parse_movie_data(data: Dict[str, Any]) -> Attraction:
+    """Parse movie data from API response"""
     location = parse_location_data(data.get("location", {}))
-    
+
     return Attraction(
         id=data.get("id", 0),
         name=data.get("name", ""),
         description=data.get("description", ""),
-        category=data.get("category", ""),
+        genre=data.get("genre", ""),
         location=location,
         rating=data.get("rating"),
         image_url=data.get("image_url"),
@@ -128,19 +97,19 @@ def parse_attraction_data(data: Dict[str, Any]) -> Attraction:
     )
 
 
-def format_attraction_name(attraction: Attraction) -> str:
-    """Format attraction name with location"""
-    name = attraction.name
-    if attraction.location.city:
-        name += f", {attraction.location.city}"
-    if attraction.location.country:
-        name += f", {attraction.location.country}"
+def format_movie_name(movie: Attraction) -> str:
+    """Format movie name with location"""
+    name = movie.name
+    if movie.location.city:
+        name += f", {movie.location.city}"
+    if movie.location.country:
+        name += f", {movie.location.country}"
     return name
 
 
-def get_category_display_name(category: str) -> str:
-    """Get display name for category"""
-    return ATTRACTION_CATEGORIES.get(category.lower(), category.title())
+def get_genre_display_name(genre: str) -> str:
+    """Get display name for genre"""
+    return ATTRACTION_CATEGORIES.get(genre.lower(), genre.title())
 
 
 def generate_booking_id() -> str:
@@ -173,7 +142,7 @@ def calculate_estimated_cost(num_visitors: int, entry_fee: Optional[str] = None)
     """Calculate estimated cost based on number of visitors"""
     if not entry_fee or "free" in entry_fee.lower():
         return 0.0
-    
+
     # Simple cost calculation - in reality this would be more complex
     try:
         # Extract number from entry fee string (e.g., "$15", "₹500")
@@ -184,31 +153,31 @@ def calculate_estimated_cost(num_visitors: int, entry_fee: Optional[str] = None)
             return base_cost * num_visitors
     except (ValueError, IndexError):
         pass
-    
+
     return None
 
 
-def format_attraction_details(attraction: Attraction) -> str:
-    """Format attraction details as a readable string"""
-    location_str = f"{attraction.location.city}, {attraction.location.country}" if attraction.location.city else attraction.location.country
-    
-    details = f"🏛️ {attraction.name}\n"
+def format_movie_details(movie: Attraction) -> str:
+    """Format movie details as a readable string"""
+    location_str = f"{movie.location.city}, {movie.location.country}" if movie.location.city else movie.location.country
+
+    details = f"🏛️ {movie.name}\n"
     details += f"📍 Location: {location_str}\n"
-    details += f"🏷️ Category: {get_category_display_name(attraction.category)}\n"
-    
-    if attraction.rating:
-        details += f"⭐ Rating: {attraction.rating}/5.0\n"
-    
-    if attraction.opening_hours:
-        details += f"🕒 Hours: {attraction.opening_hours}\n"
-        
-    if attraction.entry_fee:
-        details += f"💰 Entry Fee: {attraction.entry_fee}\n"
-    
-    if attraction.description:
-        details += f"\n📝 Description: {attraction.description}\n"
-        
-    if attraction.website:
-        details += f"🌐 Website: {attraction.website}\n"
-    
+    details += f"🏷️ Category: {get_genre_display_name(movie.genre)}\n"
+
+    if movie.rating:
+        details += f"⭐ Rating: {movie.rating}/5.0\n"
+
+    if movie.opening_hours:
+        details += f"🕒 Hours: {movie.opening_hours}\n"
+
+    if movie.entry_fee:
+        details += f"💰 Entry Fee: {movie.entry_fee}\n"
+
+    if movie.description:
+        details += f"\n📝 Description: {movie.description}\n"
+
+    if movie.website:
+        details += f"🌐 Website: {movie.website}\n"
+
     return details
