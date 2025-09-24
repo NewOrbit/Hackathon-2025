@@ -14,10 +14,13 @@ from mcp.server.fastmcp import FastMCP
 from cinema_service import (
     get_current_movies_data,
     get_movie_details_data,
-    search_movies_data
+    search_movies_data,
+    create_reservation_data,
+    get_customer_reservations_data,
+    cancel_reservation_data
 )
 
-mcp = FastMCP("Cinema", port=8009)
+mcp = FastMCP("Cinema", port=8010)
 
 # Tools
 @mcp.tool()
@@ -78,6 +81,75 @@ def search_movies(
         Filtered list of movie presentations matching the search criteria
     """
     return search_movies_data(title, genre, date, room, available_seats_min, limit)
+
+@mcp.tool()
+def make_reservation(
+    title: str,
+    date: str,
+    time: str,
+    room: str,
+    seats_count: int,
+    customer_name: str,
+    customer_email: str,
+    customer_phone: Optional[str] = None,
+    special_requests: Optional[str] = None
+) -> Dict[str, Any]:
+    """Create a movie reservation for a specific showing
+    
+    Args:
+        title: Exact movie title (use get_movie_details or search_movies to find exact title)
+        date: Date in YYYY-MM-DD format (e.g., "2025-09-25")
+        time: Time in HH:MM format (e.g., "19:30")
+        room: Room identifier (e.g., "theater_a", "theater_b", "theater_c", "imax")
+        seats_count: Number of seats to reserve (must be > 0)
+        customer_name: Customer's full name
+        customer_email: Customer's email address
+        customer_phone: Customer's phone number (optional)
+        special_requests: Any special requests or accessibility needs (optional)
+        
+    Returns:
+        Reservation confirmation with booking details and pricing information
+        Use the exact title, date, time, and room values from search_movies or get_current_movies results
+    """
+    return create_reservation_data(
+        title, date, time, room, seats_count, 
+        customer_name, customer_email, customer_phone, special_requests
+    )
+
+@mcp.tool()
+def get_my_reservations(customer_email: str) -> Dict[str, Any]:
+    """Get all reservations for a customer
+    
+    Args:
+        customer_email: Customer's email address used for reservations
+        
+    Returns:
+        List of all reservations made by the customer
+    """
+    return get_customer_reservations_data(customer_email)
+
+@mcp.tool()
+def cancel_reservation(
+    customer_email: str,
+    title: str,
+    date: str,
+    time: str,
+    room: str
+) -> Dict[str, Any]:
+    """Cancel a movie reservation
+    
+    Args:
+        customer_email: Customer's email address
+        title: Exact movie title of the reservation to cancel
+        date: Date in YYYY-MM-DD format
+        time: Time in HH:MM format
+        room: Room identifier
+        
+    Returns:
+        Cancellation confirmation and details about freed seats
+        Use get_my_reservations first to find the exact details of reservations to cancel
+    """
+    return cancel_reservation_data(customer_email, title, date, time, room)
 
 # Resources
 @mcp.resource("movie://{title}/{date}/{time}/{room}")
@@ -140,4 +212,4 @@ def get_current_movies_resource() -> str:
     return output
 
 if __name__ == "__main__":
-    mcp.run()
+    mcp.run(transport="streamable-http")

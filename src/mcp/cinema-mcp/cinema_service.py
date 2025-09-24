@@ -295,3 +295,249 @@ def search_movies_by_title_data(title: str) -> Dict[str, Any]:
         
     except Exception as e:
         return {"error": f"Failed to search movies by title: {str(e)}"}
+
+
+# In-memory storage for reservations (in production, this would be a database)
+RESERVATIONS: List[MovieReservation] = []
+
+def create_reservation_data(
+    title: str,
+    date: str,
+    time: str,
+    room: str,
+    seats_count: int,
+    customer_name: str,
+    customer_email: str,
+    customer_phone: Optional[str] = None,
+    special_requests: Optional[str] = None
+) -> Dict[str, Any]:
+    """Create a new movie reservation
+    
+    Args:
+        title: Exact movie title
+        date: Date in YYYY-MM-DD format
+        time: Time in HH:MM format  
+        room: Room identifier
+        seats_count: Number of seats to reserve
+        customer_name: Customer's full name
+        customer_email: Customer's email address
+        customer_phone: Customer's phone number (optional)
+        special_requests: Any special requests (optional)
+        
+    Returns:
+        Reservation confirmation details or error dict
+    """
+    try:
+        # Find the movie showing
+        movie_data = get_movie_by_natural_id(title, date, time, room)
+        if not movie_data:
+            return {"error": f"No movie found: '{title}' on {date} at {time} in {room}"}
+        
+        movie = parse_movie_data(movie_data)
+        
+        # Check seat availability
+        if seats_count <= 0:
+            return {"error": "Number of seats must be greater than 0"}
+        
+        if seats_count > movie.seats_remaining:
+            return {"error": f"Not enough seats available. Only {movie.seats_remaining} seats remaining"}
+        
+        # Validate contact info
+        if not customer_name or not customer_name.strip():
+            return {"error": "Customer name is required"}
+        
+        if not customer_email or not customer_email.strip():
+            return {"error": "Customer email is required"}
+        
+        # Basic email validation
+        if "@" not in customer_email or "." not in customer_email:
+            return {"error": "Please provide a valid email address"}
+        
+        # Create contact info
+        contact_info = ContactInfo(
+            name=customer_name.strip(),
+            email=customer_email.strip().lower(),
+            phone=customer_phone.strip() if customer_phone else None
+        )
+        
+        # Parse date and time
+        try:
+            reservation_date = datetime.strptime(date, "%Y-%m-%d").date()
+            reservation_time = datetime.strptime(time, "%H:%M").time()
+        except ValueError as e:
+            return {"error": f"Invalid date or time format: {str(e)}"}
+        
+        # Create reservation
+        reservation = MovieReservation(
+            movie_title=title,
+            movie_date=reservation_date,
+            movie_time=reservation_time,
+            room=room,
+            seats_reserved=seats_count,
+            contact_info=contact_info,
+            reservation_datetime=datetime.now(),
+            status="confirmed",
+            special_requests=special_requests.strip() if special_requests else None
+        )
+        
+        # Add to storage
+        RESERVATIONS.append(reservation)
+        
+        # Update movie booking count (simulate booking the seats)
+        movie_data["seats_booked"] = movie_data.get("seats_booked", 0) + seats_count
+        
+        # Generate confirmation
+        room_name = CINEMA_ROOMS.get(room, {}).get("name", room)
+        genre_name = MOVIE_GENRES.get(movie.genre, movie.genre)
+        
+        return {
+            "confirmation": {
+                "reservation_id": len(RESERVATIONS),  # Simple ID based on list length
+                "status": "confirmed",
+                "reservation_datetime": reservation.reservation_datetime.isoformat()
+            },
+            "movie_details": {
+                "title": title,
+                "date": date,
+                "time": time,
+                "room": room_name,
+                "genre": genre_name,
+                "duration_minutes": movie.duration_minutes
+            },
+            "booking_details": {
+                "seats_reserved": seats_count,
+                "customer_name": customer_name,
+                "customer_email": customer_email,
+                "customer_phone": customer_phone,
+                "special_requests": special_requests
+            },
+            "pricing": {
+                "price_per_seat": movie_data.get("price_per_seat", 0),
+                "total_price": movie_data.get("price_per_seat", 0) * seats_count
+            }
+        }
+        
+    except Exception as e:
+        return {"error": f"Failed to create reservation: {str(e)}"}
+
+
+def get_customer_reservations_data(customer_email: str) -> Dict[str, Any]:
+    """Get all reservations for a customer by email
+    
+    Args:
+        customer_email: Customer's email address
+        
+    Returns:
+        List of customer's reservations or error dict
+    """
+    try:
+        if not customer_email or not customer_email.strip():
+            return {"error": "Customer email is required"}
+        
+        email = customer_email.strip().lower()
+        customer_reservations = [
+            res for res in RESERVATIONS 
+            if res.customer_email.lower() == email
+        ]
+        
+        if not customer_reservations:
+            return {"error": f"No reservations found for {customer_email}"}
+        
+        reservations_list = []
+        for i, reservation in enumerate(customer_reservations, 1):
+            room_name = CINEMA_ROOMS.get(reservation.room, {}).get("name", reservation.room)
+            
+            reservations_list.append({
+                "reservation_number": i,
+                "movie_title": reservation.movie_title,
+                "date": reservation.movie_date.isoformat(),
+                "time": reservation.movie_time.strftime("%H:%M"),
+                "room": room_name,
+                "seats_reserved": reservation.seats_reserved,
+                "status": reservation.status,
+                "reservation_made": reservation.reservation_datetime.isoformat(),
+                "special_requests": reservation.special_requests
+            })
+        
+        return {
+            "customer_email": customer_email,
+            "total_reservations": len(reservations_list),
+            "reservations": reservations_list
+        }
+        
+    except Exception as e:
+        return {"error": f"Failed to get customer reservations: {str(e)}"}
+
+
+def cancel_reservation_data(
+    customer_email: str,
+    title: str,
+    date: str,
+    time: str,
+    room: str
+) -> Dict[str, Any]:
+    """Cancel a reservation
+    
+    Args:
+        customer_email: Customer's email address
+        title: Movie title
+        date: Date in YYYY-MM-DD format
+        time: Time in HH:MM format
+        room: Room identifier
+        
+    Returns:
+        Cancellation confirmation or error dict
+    """
+    try:
+        if not customer_email or not customer_email.strip():
+            return {"error": "Customer email is required"}
+        
+        email = customer_email.strip().lower()
+        
+        # Parse date and time for comparison
+        try:
+            target_date = datetime.strptime(date, "%Y-%m-%d").date()
+            target_time = datetime.strptime(time, "%H:%M").time()
+        except ValueError as e:
+            return {"error": f"Invalid date or time format: {str(e)}"}
+        
+        # Find the reservation
+        reservation_to_cancel = None
+        for reservation in RESERVATIONS:
+            if (reservation.customer_email.lower() == email and 
+                reservation.movie_title.lower() == title.lower() and
+                reservation.movie_date == target_date and
+                reservation.movie_time == target_time and
+                reservation.room.lower() == room.lower() and
+                reservation.status == "confirmed"):
+                reservation_to_cancel = reservation
+                break
+        
+        if not reservation_to_cancel:
+            return {"error": f"No confirmed reservation found for {customer_email} for '{title}' on {date} at {time} in {room}"}
+        
+        # Cancel the reservation
+        reservation_to_cancel.status = "cancelled"
+        
+        # Free up the seats (simulate returning seats to availability)
+        movie_data = get_movie_by_natural_id(title, date, time, room)
+        if movie_data:
+            movie_data["seats_booked"] = max(0, movie_data.get("seats_booked", 0) - reservation_to_cancel.seats_reserved)
+        
+        room_name = CINEMA_ROOMS.get(room, {}).get("name", room)
+        
+        return {
+            "cancellation_confirmed": True,
+            "cancelled_reservation": {
+                "movie_title": title,
+                "date": date,
+                "time": time,
+                "room": room_name,
+                "seats_freed": reservation_to_cancel.seats_reserved,
+                "customer_email": customer_email
+            },
+            "message": f"Reservation cancelled successfully. {reservation_to_cancel.seats_reserved} seats have been freed up."
+        }
+        
+    except Exception as e:
+        return {"error": f"Failed to cancel reservation: {str(e)}"}
