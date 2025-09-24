@@ -16,7 +16,7 @@ def _build_prompt(system_prompt: str, tool_descriptions: List[str]) -> ChatPromp
     if tool_section:
         instructions += "\n\nYou can call the following tools when needed:\n" + tool_section
     aim = (
-        "Use tools to fetch weather, attractions, macro estimates, or nutrition plans "
+        "Use tools to fetch macro estimates, or nutrition plans "
         "whenever it helps answer the user."
     )
     instructions += f"\n\n{aim}"
