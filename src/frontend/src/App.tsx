@@ -1,16 +1,14 @@
-import { Stack } from "@mui/material";
-import Chat from "./components/Chat";
+import { CssBaseline, Stack } from "@mui/material";
+import CalorieTracker from "./components/CalorieTracker";
 
 function App() {
   return (
-    <Stack
-      direction="column"
-      alignItems="center"
-      justifyContent="center"
-      height="100dvh"
-    >
-      <Chat />
-    </Stack>
+    <>
+      <CssBaseline />
+      <Stack direction="column" minHeight="100dvh" px={{ xs: 2, md: 4 }}>
+        <CalorieTracker />
+      </Stack>
+    </>
   );
 }
 
