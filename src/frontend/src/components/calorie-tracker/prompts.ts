@@ -17,7 +17,7 @@ export function buildPlanPrompt(form: FormState) {
   Return your answer in the following exact format:
   
   ### Daily Nutrition Plan
-  (Provide 2–3 short paragraphs summarising the plan and highlighting key advice.)
+  (Provide 2–3 short paragraphs summarising the plan and highlighting key advice. Use the nutrition_plan compose_plan tool to generate the plan.)
   
   #### Daily Targets
   - Calories: <number> kcal

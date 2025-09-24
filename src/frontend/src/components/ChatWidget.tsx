@@ -6,10 +6,12 @@ import {
   Stack,
   TextField,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { FiMessageSquare, FiX } from "react-icons/fi";
 
 import { initSession, sendMessage } from "../api/api";
+import { useMealLog } from "./calorie-tracker";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -20,6 +22,8 @@ export default function ChatWidget() {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  const { logMealFromText, canLogMeal } = useMealLog();
 
   useEffect(() => {
     if (!open || sessionId) return;
@@ -56,11 +60,37 @@ export default function ChatWidget() {
     setMessages((prev) => [...prev, { role: "user", content: text }]);
     setBusy(true);
     try {
-      const res = await sendMessage(sessionId, text);
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: res.output },
-      ]);
+      const systemIntro = canLogMeal
+        ? 'If the user explicitly describes a meal they consumed today, respond with both a natural language confirmation AND a JSON snippet formatted as ```json { "action": "log_meal", "meal": "..." } ```.'
+        : "Answer conversationally.";
+      const res = await sendMessage(sessionId, `${systemIntro}\nUser: ${text}`);
+      const output = res.output.trim();
+      setMessages((prev) => [...prev, { role: "assistant", content: output }]);
+
+      if (canLogMeal) {
+        const match = output.match(/```json([\s\S]*?)```/);
+        if (match) {
+          try {
+            const parsed = JSON.parse(match[1].trim());
+            if (parsed?.action === "log_meal" && parsed.meal) {
+              const result = await logMealFromText(parsed.meal as string);
+              if (!result.success) {
+                setMessages((prev) => [
+                  ...prev,
+                  {
+                    role: "assistant",
+                    content:
+                      result.message ||
+                      "I couldn't log that meal automatically. Try entering it from the tracker.",
+                  },
+                ]);
+              }
+            }
+          } catch (error) {
+            console.warn("Failed to parse JSON action", error);
+          }
+        }
+      }
     } catch (error) {
       console.error(error);
       setMessages((prev) => [
@@ -151,6 +181,21 @@ export default function ChatWidget() {
                 <Typography variant="body2">{msg.content}</Typography>
               </Box>
             ))}
+            {busy && (
+              <Box
+                sx={{
+                  alignSelf: "center",
+                  mt: 1,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  color: "text.secondary",
+                }}
+              >
+                <CircularProgress size={16} />
+                <Typography variant="caption">Thinking...</Typography>
+              </Box>
+            )}
             <div ref={scrollRef} />
           </Box>
 

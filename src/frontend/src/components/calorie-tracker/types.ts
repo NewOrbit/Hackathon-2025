@@ -70,7 +70,7 @@ export const goalOptions: GoalOption[] = [
   {
     value: "lose_weight",
     label: "Lose weight",
-    defaultRate: "0.4",
+    defaultRate: "-0.4",
     helper: "Typical 0.25–0.7 kg per week",
   },
   {

@@ -32,6 +32,8 @@ import {
 import { FormStep } from "./calorie-tracker/formStep";
 import { PlanCard } from "./calorie-tracker/PlanCard";
 import { MealLogger } from "./calorie-tracker/MealLogger";
+import MealLogContext from "./calorie-tracker/MealLogContext";
+import ChatWidget from "./ChatWidget";
 
 export default function CalorieTracker() {
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -118,12 +120,26 @@ export default function CalorieTracker() {
     }
   };
 
-  const handleLogMeal = async () => {
-    if (!sessionId || !mealInput.trim() || !planSummary || !planData) return;
-    setMealLoading(true);
-    setMealError(null);
-    const mealText = mealInput.trim();
-    setMealInput("");
+  const handleLogMealFromText = async (
+    description: string,
+    fromChat = false
+  ) => {
+    if (!sessionId || !planSummary) {
+      return {
+        success: false,
+        message: "Meal logging is not ready yet.",
+      };
+    }
+    const mealText = description.trim();
+    if (!mealText) {
+      return { success: false, message: "Please provide a meal description." };
+    }
+
+    if (!fromChat) {
+      setMealLoading(true);
+      setMealError(null);
+    }
+
     try {
       const prompt = buildMealPrompt(mealText, totals, planSummary);
       const res = await sendMessage(sessionId, prompt);
@@ -140,9 +156,9 @@ export default function CalorieTracker() {
         if (runningTotals && typeof runningTotals.calories === "number") {
           setTotals(runningTotals);
         }
-      } catch (jsonError) {
+      } catch (error) {
         parseError = true;
-        console.warn("Failed to parse meal response as JSON", jsonError, raw);
+        console.warn("Failed to parse meal response as JSON", error, raw);
       }
 
       setEntries((prev) => [
@@ -157,11 +173,34 @@ export default function CalorieTracker() {
         },
         ...prev,
       ]);
+
+      return {
+        success: true,
+        message: parseError
+          ? "Logged meal, but could not parse structured data."
+          : "Meal logged successfully.",
+        parseError,
+      };
     } catch (error: any) {
       console.error(error);
-      setMealError(error?.message || "Failed to log meal");
+      return {
+        success: false,
+        message: error?.message ?? "Failed to log meal.",
+      };
     } finally {
-      setMealLoading(false);
+      if (!fromChat) {
+        setMealLoading(false);
+      }
+    }
+  };
+
+  const handleLogMeal = async () => {
+    if (!mealInput.trim()) return;
+    const result = await handleLogMealFromText(mealInput, false);
+    if (result.success) {
+      setMealInput("");
+    } else {
+      setMealError(result.message ?? "Failed to log meal");
     }
   };
 
@@ -183,97 +222,107 @@ export default function CalorieTracker() {
   }, [form, planSummary, planData, totals, entries, activeStep, hydrated]);
 
   return (
-    <Stack spacing={3} sx={{ width: "min(960px, 100%)", mx: "auto", py: 4 }}>
-      <Typography variant="h4" fontWeight={700} textAlign="center">
-        AI Calorie Tracker
-      </Typography>
-      <Typography textAlign="center" color="text.secondary">
-        Share a few details, review your personalised plan, then log meals in
-        natural language to keep tabs on calories and macros.
-      </Typography>
+    <MealLogContext.Provider
+      value={{
+        logMealFromText: (text) => handleLogMealFromText(text, true),
+        canLogMeal: Boolean(sessionId && planSummary),
+      }}
+    >
+      <Stack spacing={3} sx={{ width: "min(960px, 100%)", mx: "auto", py: 4 }}>
+        <Typography variant="h4" fontWeight={700} textAlign="center">
+          m<span style={{ color: "#1976d2", fontWeight: 800 }}>ai</span>tre d'
+        </Typography>
+        <Typography textAlign="center" color="text.secondary">
+          Share a few details, review your personalised plan, then log meals in
+          natural language to keep tabs on calories and macros.
+        </Typography>
 
-      <Paper variant="outlined" sx={{ p: 3 }}>
-        <Stepper
-          activeStep={Math.min(activeStep, steps.length)}
-          alternativeLabel
-        >
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
+        <Paper variant="outlined" sx={{ p: 3 }}>
+          <Stepper
+            activeStep={Math.min(activeStep, steps.length)}
+            alternativeLabel
+          >
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
 
-        {activeStep < steps.length && (
-          <Box sx={{ mt: 3 }}>
-            <FormStep
-              stepIndex={activeStep}
-              form={form}
-              onChange={(fields) => setForm((prev) => ({ ...prev, ...fields }))}
-            />
-            <Stack
-              direction="row"
-              spacing={1}
-              sx={{ mt: 3 }}
-              justifyContent="flex-end"
-            >
-              {activeStep > 0 && (
-                <Button
-                  onClick={() => setActiveStep((prev) => prev - 1)}
-                  disabled={planLoading}
-                >
-                  Back
-                </Button>
-              )}
-              <Button
-                variant="contained"
-                onClick={handleNext}
-                disabled={!stepValid || planLoading || !sessionId}
+          {activeStep < steps.length && (
+            <Box sx={{ mt: 3 }}>
+              <FormStep
+                stepIndex={activeStep}
+                form={form}
+                onChange={(fields) =>
+                  setForm((prev) => ({ ...prev, ...fields }))
+                }
+              />
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ mt: 3 }}
+                justifyContent="flex-end"
               >
-                {activeStep === steps.length - 1 ? "Generate plan" : "Next"}
-              </Button>
-            </Stack>
-            {planError && (
-              <Paper variant="outlined" sx={{ mt: 2, p: 2 }}>
-                <Typography color="error">{planError}</Typography>
-              </Paper>
-            )}
-          </Box>
-        )}
+                {activeStep > 0 && (
+                  <Button
+                    onClick={() => setActiveStep((prev) => prev - 1)}
+                    disabled={planLoading}
+                  >
+                    Back
+                  </Button>
+                )}
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  disabled={!stepValid || planLoading || !sessionId}
+                >
+                  {activeStep === steps.length - 1 ? "Generate plan" : "Next"}
+                </Button>
+              </Stack>
+              {planError && (
+                <Paper variant="outlined" sx={{ mt: 2, p: 2 }}>
+                  <Typography color="error">{planError}</Typography>
+                </Paper>
+              )}
+            </Box>
+          )}
 
-        {activeStep >= steps.length && (
-          <PlanCard
-            plan={planSummary}
-            loading={planLoading}
-            error={planError}
-            onBackToEdit={() => setActiveStep(steps.length - 1)}
-            onReset={() => {
-              setPlanSummary("");
-              setPlanData(null);
-              setTotals(initialTotals);
-              setEntries([]);
-              setMealInput("");
-              setForm(initialFormState);
-              setActiveStep(0);
-              clearPersistedState();
-            }}
+          {activeStep >= steps.length && (
+            <PlanCard
+              plan={planSummary}
+              loading={planLoading}
+              error={planError}
+              onBackToEdit={() => setActiveStep(steps.length - 1)}
+              onReset={() => {
+                setPlanSummary("");
+                setPlanData(null);
+                setTotals(initialTotals);
+                setEntries([]);
+                setMealInput("");
+                setForm(initialFormState);
+                setActiveStep(0);
+                clearPersistedState();
+              }}
+            />
+          )}
+        </Paper>
+
+        {planSummary && (
+          <MealLogger
+            planSummary={planSummary}
+            totals={totals}
+            entries={entries}
+            mealInput={mealInput}
+            onInputChange={setMealInput}
+            onLogMeal={handleLogMeal}
+            loading={mealLoading}
+            error={mealError}
+            remaining={remaining}
           />
         )}
-      </Paper>
-
-      {planSummary && (
-        <MealLogger
-          planSummary={planSummary}
-          totals={totals}
-          entries={entries}
-          mealInput={mealInput}
-          onInputChange={setMealInput}
-          onLogMeal={handleLogMeal}
-          loading={mealLoading}
-          error={mealError}
-          remaining={remaining}
-        />
-      )}
-    </Stack>
+      </Stack>
+      <ChatWidget />
+    </MealLogContext.Provider>
   );
 }
