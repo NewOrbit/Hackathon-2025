@@ -40,7 +40,11 @@ async def lifespan(app: FastAPI):
     print("🚀 Starting DeepseekTravels Agent...")
     global agent_executor, tools
 
-    agent_executor, tools = await setup_agent(system_prompt=DEEPSEEKTRAVELS_SYSTEM_PROMPT)
+    with open("./SYSTEM_PROMPT.txt", 'r') as file:
+        system_prompt = file.read()
+        print(system_prompt)
+
+    agent_executor, tools = await setup_agent(system_prompt=system_prompt)
 
     print("✅ DeepseekTravels Agent is ready!")
     yield
@@ -63,10 +67,6 @@ app.add_middleware(
 
 class ChatRequest(BaseModel):
     message: str
-
-DEEPSEEKTRAVELS_SYSTEM_PROMPT = """
-You are DeepseekTravels, an intelligent travel packing assistant. Your goal is to generate optimized packing lists.
-"""
 
 async def generate_response(message: str) -> str:
     """Process user input and return LLM response using MCP tools"""
