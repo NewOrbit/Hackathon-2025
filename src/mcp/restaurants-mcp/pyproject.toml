@@ -1,0 +1,11 @@
+[project]
+name = "restaurants-mcp"
+version = "0.1.0"
+description = "Restaurant discovery, menu browsing, and reservation booking MCP server"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "mcp>=1.0.0",
+    "fastmcp>=0.1.0",
+    "dataclasses-json>=0.6.0"
+]

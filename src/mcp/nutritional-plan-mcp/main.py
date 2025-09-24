@@ -9,7 +9,7 @@ from mcp.server.fastmcp import FastMCP
 from plan_service import UserProfile, plan_calories, build_text_plan
 
 
-mcp = FastMCP("NutritionalPlan", port=8011)
+mcp = FastMCP("NutritionalPlan", port=8014)
 
 
 @mcp.tool()
@@ -74,6 +74,56 @@ def plan_summary_prompt(goal: str, constraints: Optional[str] = None) -> str:
     base += " Include daily calories, macro split, and 3 guidance bullets."
     return base
 
+@mcp.prompt()
+def meal_plan_for_rest_of_day_prompt(
+    current_time: str,
+    meals_eaten: str,
+    daily_calories: int,
+    protein_g: int,
+    carbs_g: int,
+    fats_g: int,
+) -> str:
+    return (
+        f"It's {current_time} and I've eaten {meals_eaten} today. "
+        f"My daily targets are {daily_calories} kcal, {protein_g}g protein, "
+        f"{carbs_g}g carbs, and {fats_g}g fats. Suggest meals for the rest of the day "
+        "to meet these targets."
+    )
+
+@mcp.prompt()
+def what_can_I_eat_today_prompt(
+    already_eaten: str,
+) -> str:
+    return (
+        f"I've already eaten {already_eaten} today. "
+        "Based on a balanced diet, what else can I eat today?"
+    )
+
+@mcp.prompt()
+def what_is_my_nutrition_plan_for_prompt(
+    WhichDay: Optional[str] = None,
+) -> str:
+    base = "Get my nutrition plan from storage."
+    if WhichDay:
+        base += f" Focus on {WhichDay}."
+
+    base += " Check the memory store and retrieve it from there. If there isn't any plan, say I don't have a plan yet. And offer to create one for me."
+    return base
+
+
+@mcp.prompt()
+def retrieve_my_nutrition_plan_prompt(
+    WhichDay: Optional[str] = None,
+) -> str:
+    return "Check the memory store and retrieve my nutrition plan." + (
+        f" Focus on {WhichDay}." if WhichDay else ""
+    )
+
+@mcp.prompt()
+def update_my_nutrition_plan_prompt(
+    update_details: str,
+) -> str:
+    return f"Update my nutrition plan in the memory store with these details: {update_details}."
 
 if __name__ == "__main__":
     mcp.run("streamable-http")
