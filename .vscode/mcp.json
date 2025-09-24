@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "attractions": {
+      "command": "uv",
+      "args": ["run", "main.py", "--port", "8008"],
+      "cwd": "./src/mcp/weather-mcp",
+      "env": {}
+    },
+    "weather": {
+      "command": "uv",
+      "args": ["run", "main.py", "--port", "8009"],
+      "cwd": "./src/mcp/weather-mcp",
+      "env": {}
+    }
+  }
+}

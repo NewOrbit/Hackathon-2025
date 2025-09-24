@@ -32,6 +32,19 @@ class Attraction:
     website: Optional[str] = None
     opening_hours: Optional[str] = None
     entry_fee: Optional[str] = None
+    # Restrictions and additional info
+    disability_accessible: Optional[bool] = None
+    outdoors: Optional[bool] = None
+    group_size: Optional[str] = None  # e.g. "1-10", "Large groups"
+    age_recommendation: Optional[str] = None  # e.g. "All ages", "12+"
+    age_restriction: Optional[str] = None  # e.g. "18+ only"
+    budget: Optional[str] = None  # e.g. "Low", "Medium", "High"
+    time_needed: Optional[str] = None  # e.g. "2-3 hours"
+    pet_friendly: Optional[bool] = None
+    wifi_available: Optional[bool] = None
+    photogenic: Optional[bool] = None
+    mood: Optional[str] = None  # e.g. "Romantic", "Adventurous"
+    recommended_packing_list: Optional[List[str]] = None
 
 
 @dataclass
@@ -41,6 +54,20 @@ class AttractionDetails:
     facilities: Optional[List[str]] = None
     best_time_to_visit: Optional[str] = None
     duration: Optional[str] = None
+    # Extended restrictions (for details endpoint)
+    disability_accessible: Optional[bool] = None
+    outdoors: Optional[bool] = None
+    group_size: Optional[str] = None
+    age_recommendation: Optional[str] = None
+    age_restriction: Optional[str] = None
+    budget: Optional[str] = None
+    time_needed: Optional[str] = None
+    open_hours: Optional[str] = None
+    pet_friendly: Optional[bool] = None
+    wifi_available: Optional[bool] = None
+    photogenic: Optional[bool] = None
+    mood: Optional[str] = None
+    recommended_packing_list: Optional[List[str]] = None
 
 
 @dataclass

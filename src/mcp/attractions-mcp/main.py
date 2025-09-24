@@ -23,7 +23,7 @@ from attractions_service import (
     format_search_results
 )
 
-mcp = FastMCP("Attractions", port=8008)
+mcp = FastMCP("Attractions")
 
 # tools
 @mcp.tool()
@@ -42,19 +42,95 @@ def get_attraction_details(attraction_id: int) -> Dict[str, Any]:
 def search_attractions(
     location: Optional[str] = None, 
     category: Optional[str] = None, 
-    limit: int = 20
+    limit: int = 20,
+    disability_accessible: Optional[bool] = None,
+    outdoors: Optional[bool] = None,
+    group_size: Optional[str] = None,
+    age_recommendation: Optional[str] = None,
+    age_restriction: Optional[str] = None,
+    budget: Optional[str] = None,
+    time_needed: Optional[str] = None,
+    pet_friendly: Optional[bool] = None,
+    wifi_available: Optional[bool] = None,
+    photogenic: Optional[bool] = None,
+    mood: Optional[str] = None,
+    recommended_packing_list: Optional[str] = None
 ) -> Dict[str, Any]:
-    """Search for tourist attractions with optional filters
+    """Search for tourist attractions with advanced filters
     
     Args:
         location: Location to search in (e.g., "Paris", "India", "Italy")
-        category: Category filter - "historical", "natural", "cultural", "religious", "modern", "museums", "parks", "beaches", "mountains", "architecture", "entertainment", "adventure"
+        category: Category filter - "historical", "natural", etc.
         limit: Maximum number of results (1-100, default: 20)
-        
+        disability_accessible: Only show accessible attractions
+        outdoors: Only show outdoor/indoor attractions
+        group_size: Filter by group size (e.g., "1-10")
+        age_recommendation: Filter by recommended age (e.g., "All ages", "12+")
+        age_restriction: Filter by age restriction (e.g., "18+ only")
+        budget: Filter by budget (e.g., "Low", "Medium", "High")
+        time_needed: Filter by time needed (e.g., "2-3 hours")
+        pet_friendly: Only show pet-friendly attractions
+        wifi_available: Only show attractions with wifi
+        photogenic: Only show photogenic attractions
+        mood: Filter by mood (e.g., "Romantic", "Adventurous")
+        recommended_packing_list: Filter by required packing item (e.g., "Camera")
     Returns:
         AttractionsList object as dictionary with matching attractions
     """
-    return search_attractions_data(location, category, limit)
+    # Use the existing search_attractions_data, then filter results in-memory for advanced fields
+    base_results = search_attractions_data(location, category, limit)
+    if "attractions" not in base_results:
+        return base_results
+    filtered = []
+    for attr in base_results["attractions"]:
+        if disability_accessible is not None and attr.get("disability_accessible") != disability_accessible:
+            continue
+        if outdoors is not None and attr.get("outdoors") != outdoors:
+            continue
+        if group_size and attr.get("group_size") != group_size:
+            continue
+        if age_recommendation and attr.get("age_recommendation") != age_recommendation:
+            continue
+        if age_restriction and attr.get("age_restriction") != age_restriction:
+            continue
+        if budget and attr.get("budget") != budget:
+            continue
+        if time_needed and attr.get("time_needed") != time_needed:
+            continue
+        if pet_friendly is not None and attr.get("pet_friendly") != pet_friendly:
+            continue
+        if wifi_available is not None and attr.get("wifi_available") != wifi_available:
+            continue
+        if photogenic is not None and attr.get("photogenic") != photogenic:
+            continue
+        if mood and attr.get("mood") != mood:
+            continue
+        if recommended_packing_list:
+            packing = attr.get("recommended_packing_list") or []
+            if recommended_packing_list not in packing:
+                continue
+        filtered.append(attr)
+    base_results["attractions"] = filtered
+    base_results["total_count"] = len(filtered)
+    return base_results
+
+# Add a generic filter tool for advanced search
+@mcp.tool()
+def filter_attractions(
+    field: str,
+    value: Any,
+    location: Optional[str] = None,
+    category: Optional[str] = None,
+    limit: int = 100
+) -> Dict[str, Any]:
+    """Filter attractions by any field and value (advanced search)"""
+    base_results = search_attractions_data(location, category, limit)
+    if "attractions" not in base_results:
+        return base_results
+    filtered = [a for a in base_results["attractions"] if a.get(field) == value]
+    base_results["attractions"] = filtered
+    base_results["total_count"] = len(filtered)
+    return base_results
 
 @mcp.tool()
 def get_random_attraction(region: str = "famous") -> Dict[str, Any]:
@@ -189,4 +265,4 @@ def attraction_comparison_prompt(attraction_ids: str) -> str:
 Help decide which attractions to prioritize based on time, budget, and interests."""
 
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http")
+    mcp.run()
