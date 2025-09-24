@@ -13,6 +13,7 @@ MCP_CONFIG: Tuple[Tuple[str, str, str], ...] = (
     ("macros", "MACROS_MCP_URL", "http://127.0.0.1:8010/mcp/"),
     ("nutrition_plan", "NUTRITION_PLAN_MCP_URL", "http://127.0.0.1:8011/mcp/"),
     ("trivia", "TRIVIA_MCP_URL", "http://127.0.0.1:8012/mcp/"),
+    ("restaurants", "RESTAURANTS_MCP_URL", "http://127.0.0.1:8014/mcp/"),
 )
 
 
@@ -23,12 +24,16 @@ def _build_connections() -> Tuple[Dict[str, StreamableHttpConnection], List[str]
         url = os.getenv(env_key, default)
         if not url:
             continue
-        connections[name] = StreamableHttpConnection(transport="streamable_http", url=url)
+        connections[name] = StreamableHttpConnection(
+            transport="streamable_http", url=url
+        )
         notes.append(f"[{name}] {url}")
     return connections, notes
 
 
-async def _load_tools_async(connections: Dict[str, StreamableHttpConnection], notes: List[str]):
+async def _load_tools_async(
+    connections: Dict[str, StreamableHttpConnection], notes: List[str]
+):
     client = MultiServerMCPClient(connections)
     collected = []
     descriptions = list(notes)
@@ -63,5 +68,3 @@ def load_mcp_tools_sync() -> Tuple[List, List[str]]:
         finally:
             loop.close()
             asyncio.set_event_loop(None)
-
-

@@ -45,7 +45,11 @@ class ChatResponse(BaseModel):
 
 def _get_llm():
     # Prefer Azure if configured
-    if os.getenv("AZURE_OPENAI_ENDPOINT") and os.getenv("AZURE_OPENAI_API_KEY") and os.getenv("DEPLOYMENT_NAME"):
+    if (
+        os.getenv("AZURE_OPENAI_ENDPOINT")
+        and os.getenv("AZURE_OPENAI_API_KEY")
+        and os.getenv("DEPLOYMENT_NAME")
+    ):
         return AzureChatOpenAI(
             azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
             api_key=os.getenv("AZURE_OPENAI_API_KEY"),
@@ -58,7 +62,7 @@ def _get_llm():
 
 
 SYSTEM_PROMPT = (
-    "You are an assistant helping with macros, and nutrition planning. "
+    "You are an assistant helping with macros, nutrition planning, restaurants (and their menus) and trivia. "
     "Ask clarifying questions when needed and provide concise, actionable answers."
 )
 
@@ -105,5 +109,3 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8080)
-
-
