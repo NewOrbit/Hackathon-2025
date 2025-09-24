@@ -20,71 +20,71 @@ DEFAULT_SEARCH_LIMIT = 20
 MAX_SEARCH_LIMIT = 100
 DEFAULT_RATING_MIN = 3.0
 
-# Mock attractions data for demonstration
+# Mock movies data matching cinema-mcp for demonstration
 MOCK_MOVIES = [
     {
         "id": 1,
-        "title": "Inception",
-        "synopsis": "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
-        "rating": 8.8,
-        "durationMins": 148,
+        "title": "Galactic Adventures",
+        "synopsis": "An epic space adventure following a crew of explorers as they journey through distant galaxies to save humanity from an alien threat.",
+        "rating": 8.7,
+        "durationMins": 142,
         "genre": "sci-fi"
     },
     {
         "id": 2,
-        "title": "The Godfather",
-        "synopsis": "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
-        "rating": 9.2,
-        "durationMins": 175,
-        "genre": "drama"
+        "title": "The Midnight Mystery",
+        "synopsis": "A thrilling detective story about a small town sheriff investigating a series of mysterious disappearances that all happen at midnight.",
+        "rating": 8.2,
+        "durationMins": 118,
+        "genre": "thriller"
     },
     {
         "id": 3,
-        "title": "The Dark Knight",
-        "synopsis": "When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham. The Dark Knight must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
-        "rating": 9.0,
-        "durationMins": 152,
-        "genre": "action"
+        "title": "Laugh Out Loud",
+        "synopsis": "A hilarious comedy about three friends who accidentally become viral internet sensations and must navigate their newfound fame.",
+        "rating": 7.8,
+        "durationMins": 95,
+        "genre": "comedy"
     },
     {
         "id": 4,
-        "title": "Pulp Fiction",
-        "synopsis": "The lives of two mob hitmen, a boxer, a gangster's wife, and a pair of diner bandits intertwine in four tales of violence and redemption.",
-        "rating": 8.9,
-        "durationMins": 154,
-        "genre": "crime"
+        "title": "Dragon's Heart",
+        "synopsis": "An animated fantasy adventure about a young girl who discovers she can communicate with dragons and must save her village from an ancient curse.",
+        "rating": 8.5,
+        "durationMins": 103,
+        "genre": "animation"
     },
     {
         "id": 5,
-        "title": "Forrest Gump",
-        "synopsis": "The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with a low IQ.",
-        "rating": 8.8,
-        "durationMins": 142,
+        "title": "City of Shadows",
+        "synopsis": "A noir drama set in 1940s New York following a detective uncovering corruption in the police department while solving a murder case.",
+        "rating": 8.9,
+        "durationMins": 134,
         "genre": "drama"
     },
     {
         "id": 6,
-        "title": "Interstellar",
-        "synopsis": "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
-        "rating": 8.6,
-        "durationMins": 169,
-        "genre": "sci-fi"
+        "title": "Ocean's Edge",
+        "synopsis": "A spectacular IMAX documentary exploring the deepest parts of our oceans and the incredible creatures that call them home.",
+        "rating": 9.1,
+        "durationMins": 87,
+        "genre": "documentary"
     },
     {
         "id": 7,
-        "title": "Parasite",
-        "synopsis": "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.",
-        "rating": 8.6,
-        "durationMins": 132,
-        "genre": "thriller"
+        "title": "Love in Paris",
+        "synopsis": "A romantic comedy about an American tourist who gets lost in Paris and finds love with a local café owner who helps her navigate the city.",
+        "rating": 7.6,
+        "durationMins": 108,
+        "genre": "romance"
     },
     {
         "id": 8,
-        "title": "Schindler's List",
-        "synopsis": "In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.",
-        "rating": 8.9,
-        "durationMins": 195,
-        "genre": "history"
+        "title": "Nightmare Manor",
+        "synopsis": "A spine-chilling horror film about a family that inherits an old mansion, only to discover it's haunted by the spirits of its previous owners.",
+        "rating": 7.4,
+        "durationMins": 106,
+        "genre": "horror"
     },
     {
         "id": 9,
@@ -189,113 +189,113 @@ MOCK_REVIEWS = [
         "movie_id": 1,
         "reviewer": "Alice",
         "rating": 5,
-        "comment": "A mind-bending masterpiece with stunning visuals and a gripping plot.",
-        "reviewDate": "2024-03-01"
+        "comment": "An epic space adventure with stunning visuals and compelling characters. The galaxy scenes are breathtaking!",
+        "reviewDate": "2024-09-01"
     },
     {
         "movie_id": 1,
         "reviewer": "Bob",
         "rating": 4,
-        "comment": "Complex and thought-provoking, but a bit hard to follow at times.",
-        "reviewDate": "2024-03-02"
+        "comment": "Great sci-fi adventure, though the plot gets a bit convoluted in the middle. Overall very entertaining.",
+        "reviewDate": "2024-09-02"
     },
     {
         "movie_id": 2,
         "reviewer": "Charlie",
         "rating": 5,
-        "comment": "An epic tale of family and power. A must-watch classic.",
-        "reviewDate": "2024-03-03"
+        "comment": "A masterful thriller that keeps you guessing until the very end. Perfect midnight mystery vibes!",
+        "reviewDate": "2024-09-03"
     },
     {
         "movie_id": 2,
         "reviewer": "Diana",
-        "rating": 5,
-        "comment": "Brilliant performances and an unforgettable story.",
-        "reviewDate": "2024-03-04"
+        "rating": 4,
+        "comment": "Excellent detective work and atmospheric tension. The midnight setting adds to the suspense.",
+        "reviewDate": "2024-09-04"
     },
     {
         "movie_id": 3,
         "reviewer": "Eve",
-        "rating": 5,
-        "comment": "Heath Ledger's Joker is iconic. A thrilling ride from start to finish.",
-        "reviewDate": "2024-03-05"
+        "rating": 4,
+        "comment": "Hilarious from start to finish! The social media angle is spot-on and very relatable.",
+        "reviewDate": "2024-09-05"
     },
     {
         "movie_id": 3,
         "reviewer": "Frank",
-        "rating": 4,
-        "comment": "Great action and depth, though a bit dark for my taste.",
-        "reviewDate": "2024-03-06"
+        "rating": 5,
+        "comment": "Best comedy I've seen this year. The friendship dynamics are heartwarming and funny.",
+        "reviewDate": "2024-09-06"
     },
     {
         "movie_id": 4,
         "reviewer": "Grace",
         "rating": 5,
-        "comment": "A wild, stylish film with unforgettable dialogue.",
-        "reviewDate": "2024-03-07"
+        "comment": "Beautiful animation and a heartwarming story about dragons and friendship. Perfect for families!",
+        "reviewDate": "2024-09-07"
     },
     {
         "movie_id": 4,
         "reviewer": "Henry",
         "rating": 4,
-        "comment": "Unique storytelling and great cast.",
-        "reviewDate": "2024-03-08"
+        "comment": "Lovely animated adventure with great voice acting and stunning visuals.",
+        "reviewDate": "2024-09-08"
     },
     {
         "movie_id": 5,
         "reviewer": "Ivy",
         "rating": 5,
-        "comment": "Heartwarming and inspirational. Tom Hanks is fantastic.",
-        "reviewDate": "2024-03-09"
+        "comment": "A masterful noir drama with incredible atmosphere. The 1940s setting is perfectly captured.",
+        "reviewDate": "2024-09-09"
     },
     {
         "movie_id": 5,
         "reviewer": "Jack",
         "rating": 4,
-        "comment": "A touching story with memorable moments.",
-        "reviewDate": "2024-03-10"
+        "comment": "Gripping detective story with excellent cinematography and strong performances.",
+        "reviewDate": "2024-09-10"
     },
     {
         "movie_id": 6,
         "reviewer": "Karen",
         "rating": 5,
-        "comment": "Visually stunning and emotionally powerful.",
-        "reviewDate": "2024-03-11"
+        "comment": "Absolutely breathtaking documentary! The ocean footage is stunning and educational.",
+        "reviewDate": "2024-09-11"
     },
     {
         "movie_id": 6,
         "reviewer": "Leo",
-        "rating": 4,
-        "comment": "Ambitious sci-fi with a moving story.",
-        "reviewDate": "2024-03-12"
+        "rating": 5,
+        "comment": "David Attenborough's narration combined with incredible underwater cinematography. A must-see!",
+        "reviewDate": "2024-09-12"
     },
     {
         "movie_id": 7,
         "reviewer": "Mona",
-        "rating": 5,
-        "comment": "A brilliant social satire with suspenseful twists.",
-        "reviewDate": "2024-03-13"
+        "rating": 4,
+        "comment": "Charming romantic comedy with beautiful Parisian scenery. Predictable but delightful!",
+        "reviewDate": "2024-09-13"
     },
     {
         "movie_id": 7,
         "reviewer": "Nate",
-        "rating": 4,
-        "comment": "Darkly funny and deeply unsettling.",
-        "reviewDate": "2024-03-14"
+        "rating": 3,
+        "comment": "Sweet story but a bit clichéd. The Paris setting makes up for the predictable plot.",
+        "reviewDate": "2024-09-14"
     },
     {
         "movie_id": 8,
         "reviewer": "Olivia",
-        "rating": 5,
-        "comment": "A powerful and emotional historical drama.",
-        "reviewDate": "2024-03-15"
+        "rating": 4,
+        "comment": "Genuinely scary horror film with great atmosphere. The old mansion setting is perfect!",
+        "reviewDate": "2024-09-15"
     },
     {
         "movie_id": 8,
         "reviewer": "Paul",
-        "rating": 5,
-        "comment": "Heart-wrenching and beautifully acted.",
-        "reviewDate": "2024-03-16"
+        "rating": 3,
+        "comment": "Classic haunted house horror but some jump scares felt forced. Good for horror fans.",
+        "reviewDate": "2024-09-16"
     },
     {
         "movie_id": 9,
