@@ -1,0 +1,10 @@
+[project]
+name = "movie-reviews-mcp"
+version = "1.0.0"
+description = "MCP server for discovering movies and reviews"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "mcp[cli]>=1.13.1",
+    "requests",
+]
