@@ -13,18 +13,9 @@ def search_restaurants(
     location: Optional[str] = None,
     average_price: Optional[float] = None,
     rating_min: Optional[float] = None,
+    opens_at: Optional[int] = None,
+    closes_at: Optional[int] = None
 ) -> List[Dict[str, Any]]:
-    """Search for restaurants with optional filters
-    
-    Args:
-        cuisine: Filter by cuisine type (e.g. "italian", "chinese")
-        location: Filter by location/area e.g. "downtown New York"  
-        average_price: Filter by maximum average price per person (e.g. 50.0)
-        rating_min: Minimum rating filter (e.g., 4.0)
-        
-    Returns:
-        List of restaurants matching the filters
-    """
 
     filtered_restaurants = MOCK_RESTAURANTS.copy()
 
@@ -51,6 +42,18 @@ def search_restaurants(
         filtered_restaurants = [
             r for r in filtered_restaurants 
             if r.get("rating", 0) >= rating_min
+        ]
+
+    if opens_at:
+        filtered_restaurants = [
+            r for r in filtered_restaurants
+            if r.get("opens_at", 0) >= opens_at
+        ]
+
+    if  closes_at:
+        filtered_restaurants = [
+            r for r in filtered_restaurants
+            if r.get("closes_at", 23) <= closes_at
         ]
 
     return filtered_restaurants

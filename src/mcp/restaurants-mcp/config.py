@@ -5,7 +5,9 @@ MOCK_RESTAURANTS = [
         "cuisine": "healthy",
         "location": "New York",
         "average_price": 25.0,
-        "rating": 4.2
+        "rating": 4.2,
+        "opens_at": 700,
+        "closes_at": 2100
     },
     {
         "id": "rest_102",
@@ -13,7 +15,9 @@ MOCK_RESTAURANTS = [
         "cuisine": "italian",
         "location": "New York",
         "average_price": 15.0,
-        "rating": 3.8
+        "rating": 3.8,
+        "opens_at": 700,
+        "closes_at": 2300
     },
     {
         "id": "rest_103",
@@ -21,7 +25,9 @@ MOCK_RESTAURANTS = [
         "cuisine": "japanese",
         "location": "New York",
         "average_price": 65.0,
-        "rating": 4.6
+        "rating": 4.6,
+        "opens_at": 1700,
+        "closes_at": 2200
     },
     {
         "id": "rest_104",
@@ -29,7 +35,9 @@ MOCK_RESTAURANTS = [
         "cuisine": "american",
         "location": "Chicago",
         "average_price": 18.0,
-        "rating": 4.1
+        "rating": 4.1,
+        "opens_at": 1000,
+        "closes_at": 2400
     },
     {
         "id": "rest_105",
@@ -37,7 +45,9 @@ MOCK_RESTAURANTS = [
         "cuisine": "mexican",
         "location": "New York",
         "average_price": 12.0,
-        "rating": 4.3
+        "rating": 4.3,
+        "opens_at": 1100,
+        "closes_at": 2200
     },
     {
         "id": "rest_106",
@@ -45,7 +55,9 @@ MOCK_RESTAURANTS = [
         "cuisine": "italian",
         "location": "Chicago",
         "average_price": 28.0,
-        "rating": 3.9
+        "rating": 3.9,
+        "opens_at": 1600,
+        "closes_at": 2200
     },
     {
         "id": "rest_107",
@@ -53,7 +65,9 @@ MOCK_RESTAURANTS = [
         "cuisine": "indian",
         "location": "Chicago",
         "average_price": 22.0,
-        "rating": 4.4
+        "rating": 4.4,
+        "opens_at": 1200,
+        "closes_at": 2200
     },
     {
         "id": "rest_108",
@@ -61,7 +75,9 @@ MOCK_RESTAURANTS = [
         "cuisine": "american",
         "location": "Chicago",
         "average_price": 45.0,
-        "rating": 4.7
+        "rating": 4.7,
+        "opens_at": 1600,
+        "closes_at": 2300
     },
     {
         "id": "rest_109",
@@ -69,7 +85,9 @@ MOCK_RESTAURANTS = [
         "cuisine": "mediterranean",
         "location": "Seattle",
         "average_price": 14.0,
-        "rating": 4.0
+        "rating": 4.0,
+        "opens_at": 1000,
+        "closes_at": 2100
     },
     {
         "id": "rest_110",
@@ -77,7 +95,9 @@ MOCK_RESTAURANTS = [
         "cuisine": "asian",
         "location": "Seattle",
         "average_price": 20.0,
-        "rating": 3.7
+        "rating": 3.7,
+        "opens_at": 1130,
+        "closes_at": 2230
     }
 ]
 

@@ -37,6 +37,8 @@ def search_restaurants(
     location: Optional[str] = None,
     average_price: Optional[float] = None,
     rating_min: Optional[float] = None,
+    opens_at: Optional[int] = None,
+    closes_at: Optional[int] = None,
 ) -> List[Dict[str, Any]]:
     """Search for restaurants with optional filters
 
@@ -45,6 +47,8 @@ def search_restaurants(
         location: City name or place name (e.g., "London", "New York", "Tokyo")
         average_price: Filter by maximum average price per person (e.g. 50)
         rating_min: Minimum rating filter (e.g., 4)
+        opens_at: Filter by opening hours (e.g. 700)
+        closes_at: Filter by closing hours (e.g. 2100)
 
     Returns:
         RestaurantsList object as dictionary with matching restaurants
@@ -54,6 +58,8 @@ def search_restaurants(
         location,
         average_price,
         rating_min,
+        opens_at,
+        closes_at,
     )
 
 
