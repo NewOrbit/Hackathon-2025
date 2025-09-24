@@ -176,9 +176,37 @@ def get_movie_reviews_data(movie_id: int) -> MovieReviewList:
 
     movie = get_movie_by_id(movie_id)
 
-    reviews = [review for review in MOCK_REVIEWS if review.movie_id == movie_id]
+    # Filter reviews by movie_id (MOCK_REVIEWS contains dictionaries)
+    review_dicts = [review for review in MOCK_REVIEWS if review["movie_id"] == movie_id]
+    
+    # Convert dictionary reviews to MovieReview objects
+    reviews = []
+    for review_dict in review_dicts:
+        review_date = datetime.strptime(review_dict["reviewDate"], "%Y-%m-%d")
+        review = MovieReview(
+            movie_id=review_dict["movie_id"],
+            rating=review_dict["rating"],
+            comment=review_dict["comment"],
+            reviewer=review_dict["reviewer"],
+            reviewDate=review_date
+        )
+        reviews.append(review)
+    
+    # Create movie object if movie data exists
+    movie_obj = None
+    if movie:
+        movie_obj = Movie(
+            id=movie["id"],
+            title=movie["title"],
+            synopsis=movie["synopsis"],
+            rating=movie["rating"],
+            durationMins=movie["durationMins"],
+            year=2024,  # Default year since not in movie data
+            genre=movie["genre"]
+        )
+    
     review_list = MovieReviewList(
-        movie=movie,
+        movie=movie_obj,
         total_count=len(reviews),
         reviews=reviews,
         avg_rating=(sum(r.rating for r in reviews) / len(reviews)) if reviews else None
