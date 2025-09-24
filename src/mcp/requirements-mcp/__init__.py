@@ -1,0 +1,2 @@
+"""Travel requirements MCP package."""
+

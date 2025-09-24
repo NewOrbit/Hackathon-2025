@@ -1,0 +1,31 @@
+# FastAPI Backend for DeepseekTravels Chat
+
+# Web framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# HTTP client for server status checks
+httpx>=0.26.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# LangChain and LLM integration (latest versions) 
+langchain>=0.3.27
+langchain-openai>=0.2.8
+langchain-community>=0.3.27
+openai>=1.54.0
+
+# MCP integration
+mcp[cli]>=1.13.1
+langchain-mcp-adapters>=0.1.0
+
+# Data validation
+pydantic>=2.0.0
+
+# Async utilities
+asyncio-mqtt>=0.13.0
+
+# Development
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
