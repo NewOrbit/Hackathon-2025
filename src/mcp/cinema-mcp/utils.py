@@ -41,44 +41,71 @@ def get_movies_by_date(target_date: date) -> List[Dict[str, Any]]:
     return movies_on_date
 
 
-def search_movies_by_criteria(
+def search_movies_by_title(title: str) -> List[Dict[str, Any]]:
+    """Search for movie presentations by title (partial match, case-insensitive)"""
+    matching_movies = []
+    search_title = title.lower()
+    
+    for movie in MOCK_MOVIE_PRESENTATIONS:
+        movie_title = movie.get("title", "").lower()
+        if search_title in movie_title:
+            matching_movies.append(movie)
+    
+    return matching_movies
+
+
+def search_movie_presentations(
+    title: Optional[str] = None,
     genre: Optional[str] = None,
     date: Optional[date] = None,
     room: Optional[str] = None,
     available_seats_min: Optional[int] = None,
     limit: int = 20
 ) -> List[Dict[str, Any]]:
-    """Search movies based on various criteria"""
-    filtered_movies = []
+    """Search movie presentations based on various criteria"""
+    filtered_presentations = []
     
-    for movie in MOCK_MOVIE_PRESENTATIONS:
-        # Filter by genre
-        if genre and movie.get("genre") != genre:
-            continue
+    for presentation in MOCK_MOVIE_PRESENTATIONS:
+        # Filter by title (partial match, case-insensitive)
+        if title:
+            presentation_title = presentation.get("title", "").lower()
+            search_title = title.lower()
+            if search_title not in presentation_title:
+                continue
+            
+        # Filter by genre (case-insensitive)
+        if genre:
+            presentation_genre = presentation.get("genre", "").lower()
+            search_genre = genre.lower()
+            if presentation_genre != search_genre:
+                continue
             
         # Filter by date
-        if date and movie.get("date") != date:
+        if date and presentation.get("date") != date:
             continue
             
-        # Filter by room
-        if room and movie.get("room") != room:
-            continue
+        # Filter by room (case-insensitive)
+        if room:
+            presentation_room = presentation.get("room", "").lower()
+            search_room = room.lower()
+            if presentation_room != search_room:
+                continue
             
         # Filter by minimum available seats
         if available_seats_min:
-            seats_available = movie.get("seats_available", 0)
-            seats_booked = movie.get("seats_booked", 0)
+            seats_available = presentation.get("seats_available", 0)
+            seats_booked = presentation.get("seats_booked", 0)
             seats_remaining = seats_available - seats_booked
             if seats_remaining < available_seats_min:
                 continue
         
-        filtered_movies.append(movie)
+        filtered_presentations.append(presentation)
         
         # Apply limit
-        if len(filtered_movies) >= limit:
+        if len(filtered_presentations) >= limit:
             break
     
-    return filtered_movies
+    return filtered_presentations
 
 
 def parse_movie_data(movie_data: Dict[str, Any]) -> MovieShowing:

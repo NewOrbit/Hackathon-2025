@@ -12,8 +12,8 @@ from config import (
 )
 from models import MovieShowing, ContactInfo, MovieReservation
 from utils import (
-    get_movie_by_id, search_movies_by_criteria, get_current_movies,
-    get_movies_by_date, format_movie_details, parse_movie_data
+    get_movie_by_id, search_movie_presentations, get_current_movies,
+    get_movies_by_date, search_movies_by_title, format_movie_details, parse_movie_data
 )
 
 
@@ -109,15 +109,17 @@ def get_movie_details_data(movie_id: str) -> Dict[str, Any]:
 
 
 def search_movies_data(
+    title: Optional[str] = None,
     genre: Optional[str] = None,
     date: Optional[str] = None, 
     room: Optional[str] = None,
     available_seats_min: Optional[int] = None,
     limit: int = DEFAULT_SEARCH_LIMIT
 ) -> Dict[str, Any]:
-    """Search for movies with filters
+    """Search for movie presentations with filters
     
     Args:
+        title: Movie title to search for (partial match, case-insensitive)
         genre: Movie genre filter (e.g., "action", "comedy", "drama")
         date: Date filter in YYYY-MM-DD format
         room: Cinema room filter
@@ -125,7 +127,7 @@ def search_movies_data(
         limit: Maximum number of results (default: 20, max: 100)
         
     Returns:
-        Filtered list of movies or error dict
+        Filtered list of movie presentations or error dict
     """
     try:
         if limit > 100:
@@ -141,7 +143,8 @@ def search_movies_data(
             except ValueError:
                 return {"error": "Invalid date format. Use YYYY-MM-DD"}
         
-        movies = search_movies_by_criteria(
+        movies = search_movie_presentations(
+            title=title,
             genre=genre,
             date=date_filter,
             room=room,
@@ -170,6 +173,8 @@ def search_movies_data(
         
         # Build filter summary
         filters_applied = []
+        if title:
+            filters_applied.append(f"Title: {title}")
         if genre:
             filters_applied.append(f"Genre: {MOVIE_GENRES.get(genre, genre)}")
         if date:
@@ -235,3 +240,48 @@ def get_movies_by_date_data(date: str) -> Dict[str, Any]:
         
     except Exception as e:
         return {"error": f"Failed to get movies for date: {str(e)}"}
+
+
+def search_movies_by_title_data(title: str) -> Dict[str, Any]:
+    """Search for movies by title only
+    
+    Args:
+        title: Movie title to search for (partial match, case-insensitive)
+        
+    Returns:
+        List of movies matching the title search
+    """
+    try:
+        if not title or not title.strip():
+            return {"error": "Title is required for search"}
+        
+        movies = search_movies_by_title(title.strip())
+        
+        if not movies:
+            return {"error": f"No movies found with title containing '{title}'"}
+        
+        movies_list = []
+        for movie_data in movies:
+            movie = parse_movie_data(movie_data)
+            movies_list.append({
+                "id": movie_data["id"],
+                "title": movie.title,
+                "date": movie.date.isoformat(),
+                "time": movie.time.strftime("%H:%M"),
+                "room": CINEMA_ROOMS.get(movie.room, {}).get("name", movie.room),
+                "genre": MOVIE_GENRES.get(movie.genre, movie.genre),
+                "rating": movie.rating,
+                "seats_remaining": movie.seats_remaining,
+                "price_per_seat": movie_data.get("price_per_seat"),
+                "director": movie_data.get("director"),
+                "is_sold_out": movie.is_sold_out
+            })
+        
+        return {
+            "search_title": title,
+            "total_found": len(movies_list),
+            "movies": movies_list
+        }
+        
+    except Exception as e:
+        return {"error": f"Failed to search movies by title: {str(e)}"}

@@ -15,6 +15,7 @@ from cinema_service import (
     get_current_movies_data,
     get_movie_details_data,
     search_movies_data,
+    search_movies_by_title_data,
     get_movies_by_date_data
 )
 
@@ -49,15 +50,17 @@ def get_movie_details(movie_id: str) -> Dict[str, Any]:
 
 @mcp.tool()
 def search_movies(
+    title: Optional[str] = None,
     genre: Optional[str] = None,
     date: Optional[str] = None,
     room: Optional[str] = None, 
     available_seats_min: Optional[int] = None,
     limit: int = 20
 ) -> Dict[str, Any]:
-    """Search for movies with optional filters
+    """Search for movie presentations with optional filters
     
     Args:
+        title: Filter by movie title (partial match, case-insensitive)
         genre: Filter by movie genre (action, comedy, drama, horror, sci-fi, romance, thriller, animation, documentary, family)
         date: Filter by date in YYYY-MM-DD format (e.g., "2025-09-25")
         room: Filter by cinema room (theater_a, theater_b, theater_c, imax)
@@ -65,9 +68,21 @@ def search_movies(
         limit: Maximum number of results to return (default: 20, max: 100)
         
     Returns:
-        Filtered list of movies matching the search criteria
+        Filtered list of movie presentations matching the search criteria
     """
-    return search_movies_data(genre, date, room, available_seats_min, limit)
+    return search_movies_data(title, genre, date, room, available_seats_min, limit)
+
+@mcp.tool()
+def find_movie_by_title(title: str) -> Dict[str, Any]:
+    """Find movie presentations by title
+    
+    Args:
+        title: Movie title to search for (partial match, case-insensitive)
+        
+    Returns:
+        List of movie presentations matching the title search
+    """
+    return search_movies_by_title_data(title)
 
 @mcp.tool()
 def get_movies_by_date(date: str) -> Dict[str, Any]:
