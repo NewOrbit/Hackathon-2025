@@ -1,0 +1,10 @@
+[project]
+name = "requirements-mcp"
+version = "0.1.0"
+description = "Mock travel requirements MCP server"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=0.2.0",
+    "fastmcp>=0.4.0",
+]
+
