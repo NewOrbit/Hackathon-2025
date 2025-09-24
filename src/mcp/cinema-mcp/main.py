@@ -14,9 +14,7 @@ from mcp.server.fastmcp import FastMCP
 from cinema_service import (
     get_current_movies_data,
     get_movie_details_data,
-    search_movies_data,
-    search_movies_by_title_data,
-    get_movies_by_date_data
+    search_movies_data
 )
 
 mcp = FastMCP("Cinema", port=8009)
@@ -37,16 +35,25 @@ def get_current_movies() -> Dict[str, Any]:
     return get_current_movies_data()
 
 @mcp.tool()
-def get_movie_details(movie_id: str) -> Dict[str, Any]:
+def get_movie_details(
+    title: str,
+    date: str,
+    time: str,
+    room: str
+) -> Dict[str, Any]:
     """Get detailed information about a specific movie showing
     
     Args:
-        movie_id: Unique ID of the movie showing (e.g., "movie_001")
+        title: Exact movie title
+        date: Date in YYYY-MM-DD format (e.g., "2025-09-25")
+        time: Time in HH:MM format (e.g., "19:30")
+        room: Room identifier (e.g., "theater_a", "theater_b", "theater_c", "imax")
         
     Returns:
         Detailed movie information including plot, cast, theater details, and availability
+        Use search_movies first to find the exact title, date, time, and room values needed
     """
-    return get_movie_details_data(movie_id)
+    return get_movie_details_data(title, date, time, room)
 
 @mcp.tool()
 def search_movies(
@@ -72,35 +79,11 @@ def search_movies(
     """
     return search_movies_data(title, genre, date, room, available_seats_min, limit)
 
-@mcp.tool()
-def find_movie_by_title(title: str) -> Dict[str, Any]:
-    """Find movie presentations by title
-    
-    Args:
-        title: Movie title to search for (partial match, case-insensitive)
-        
-    Returns:
-        List of movie presentations matching the title search
-    """
-    return search_movies_by_title_data(title)
-
-@mcp.tool()
-def get_movies_by_date(date: str) -> Dict[str, Any]:
-    """Get all movies playing on a specific date
-    
-    Args:
-        date: Date in YYYY-MM-DD format (e.g., "2025-09-25")
-        
-    Returns:
-        List of all movie showings scheduled for the specified date, sorted by time
-    """
-    return get_movies_by_date_data(date)
-
 # Resources
-@mcp.resource("movie://{movie_id}")
-def get_movie_resource(movie_id: str) -> str:
+@mcp.resource("movie://{title}/{date}/{time}/{room}")
+def get_movie_resource(title: str, date: str, time: str, room: str) -> str:
     """Get movie details as a formatted resource"""
-    result = get_movie_details_data(movie_id)
+    result = get_movie_details_data(title, date, time, room)
     
     if "error" in result:
         return f"Error: {result['error']}"

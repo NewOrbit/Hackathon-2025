@@ -54,6 +54,67 @@ def search_movies_by_title(title: str) -> List[Dict[str, Any]]:
     return matching_movies
 
 
+def get_movie_by_natural_id(
+    title: str, 
+    date: Optional[str] = None, 
+    time: Optional[str] = None, 
+    room: Optional[str] = None
+) -> Optional[Dict[str, Any]]:
+    """Get movie by natural identifiers (title is required, others help narrow down)"""
+    search_title = title.lower()
+    
+    # Parse date if provided
+    parsed_date = None
+    if date:
+        try:
+            from datetime import datetime
+            parsed_date = datetime.strptime(date, "%Y-%m-%d").date()
+        except ValueError:
+            return None
+    
+    # Parse time if provided  
+    parsed_time = None
+    if time:
+        try:
+            from datetime import datetime
+            # Try different time formats
+            for fmt in ["%H:%M", "%I:%M %p", "%I:%M%p"]:
+                try:
+                    parsed_time = datetime.strptime(time, fmt).time()
+                    break
+                except ValueError:
+                    continue
+        except:
+            pass
+    
+    matches = []
+    for movie in MOCK_MOVIE_PRESENTATIONS:
+        # Title must match (partial, case-insensitive)
+        movie_title = movie.get("title", "").lower()
+        if search_title not in movie_title:
+            continue
+            
+        # Filter by date if provided
+        if parsed_date and movie.get("date") != parsed_date:
+            continue
+            
+        # Filter by time if provided
+        if parsed_time and movie.get("time") != parsed_time:
+            continue
+            
+        # Filter by room if provided (case-insensitive)
+        if room:
+            movie_room = movie.get("room", "").lower()
+            search_room = room.lower()
+            if movie_room != search_room:
+                continue
+        
+        matches.append(movie)
+    
+    # Return the first match, or None if no matches
+    return matches[0] if matches else None
+
+
 def search_movie_presentations(
     title: Optional[str] = None,
     genre: Optional[str] = None,

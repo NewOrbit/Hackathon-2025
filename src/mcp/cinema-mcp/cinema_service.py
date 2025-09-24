@@ -12,7 +12,7 @@ from config import (
 )
 from models import MovieShowing, ContactInfo, MovieReservation
 from utils import (
-    get_movie_by_id, search_movie_presentations, get_current_movies,
+    get_movie_by_id, get_movie_by_natural_id, search_movie_presentations, get_current_movies,
     get_movies_by_date, search_movies_by_title, format_movie_details, parse_movie_data
 )
 
@@ -33,7 +33,6 @@ def get_current_movies_data() -> Dict[str, Any]:
         for movie_data in current_movies:
             movie = parse_movie_data(movie_data)
             movies_list.append({
-                "id": movie_data["id"],
                 "title": movie.title,
                 "description": movie.description,
                 "date": movie.date.isoformat(),
@@ -61,26 +60,40 @@ def get_current_movies_data() -> Dict[str, Any]:
         return {"error": f"Failed to get current movies: {str(e)}"}
 
 
-def get_movie_details_data(movie_id: str) -> Dict[str, Any]:
-    """Get detailed information about a specific movie
+def get_movie_details_data(
+    title: str,
+    date: Optional[str] = None,
+    time: Optional[str] = None,
+    room: Optional[str] = None
+) -> Dict[str, Any]:
+    """Get detailed information about a specific movie presentation
     
     Args:
-        movie_id: Unique ID of the movie showing
+        title: Movie title (partial match allowed)
+        date: Date in YYYY-MM-DD format (optional, helps narrow results)
+        time: Time in HH:MM or HH:MM AM/PM format (optional, helps narrow results)
+        room: Room identifier like 'theater_a' or 'Theater A' (optional, helps narrow results)
         
     Returns:
         MovieShowing object as dictionary or error dict
     """
     try:
-        movie_data = get_movie_by_id(movie_id)
+        movie_data = get_movie_by_natural_id(title, date, time, room)
         if not movie_data:
-            return {"error": f"Movie with ID {movie_id} not found"}
+            error_msg = f"No movie found with title containing '{title}'"
+            if date or time or room:
+                filters = []
+                if date: filters.append(f"date: {date}")
+                if time: filters.append(f"time: {time}")
+                if room: filters.append(f"room: {room}")
+                error_msg += f" and filters: {', '.join(filters)}"
+            return {"error": error_msg}
         
         movie = parse_movie_data(movie_data)
         room_info = CINEMA_ROOMS.get(movie.room, {})
         
         return {
             "movie": {
-                "id": movie_data["id"],
                 "title": movie.title,
                 "description": movie.description,
                 "date": movie.date.isoformat(),
@@ -159,7 +172,6 @@ def search_movies_data(
         for movie_data in movies:
             movie = parse_movie_data(movie_data)
             movies_list.append({
-                "id": movie_data["id"],
                 "title": movie.title,
                 "date": movie.date.isoformat(),
                 "time": movie.time.strftime("%H:%M"),
@@ -218,7 +230,6 @@ def get_movies_by_date_data(date: str) -> Dict[str, Any]:
         for movie_data in movies:
             movie = parse_movie_data(movie_data)
             movies_list.append({
-                "id": movie_data["id"],
                 "title": movie.title,
                 "time": movie.time.strftime("%H:%M"),
                 "room": CINEMA_ROOMS.get(movie.room, {}).get("name", movie.room),
@@ -264,7 +275,6 @@ def search_movies_by_title_data(title: str) -> Dict[str, Any]:
         for movie_data in movies:
             movie = parse_movie_data(movie_data)
             movies_list.append({
-                "id": movie_data["id"],
                 "title": movie.title,
                 "date": movie.date.isoformat(),
                 "time": movie.time.strftime("%H:%M"),
