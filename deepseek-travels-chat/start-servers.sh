@@ -56,7 +56,7 @@ mkdir -p logs
 # Start all servers
 start_server "weather" 8009
 start_server "attractions" 8008  
-start_server "travel-requirements" 8010
+start_server "requirements" 8010
 start_server "booking" 8011
 
 echo ""
