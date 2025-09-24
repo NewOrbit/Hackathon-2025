@@ -8,25 +8,27 @@ import random
 import string
 
 from models import Restaurant, MenuItem, Reservation, BookingResponse
-from restaurant_data import LONDON_RESTAURANTS, PARIS_RESTAURANTS
+from restaurant_data import LONDON_RESTAURANTS, PARIS_RESTAURANTS, ROME_RESTAURANTS
 
 # In-memory storage for reservations (in production, this would be a database)
 reservations_db: List[Reservation] = []
 
 
 def get_restaurants_by_location(location: str) -> List[Restaurant]:
-    """Get restaurants by location (London or Paris)."""
+    """Get restaurants by location (London, Paris, or Rome)."""
     if location.lower() == "london":
         return LONDON_RESTAURANTS
     elif location.lower() == "paris":
         return PARIS_RESTAURANTS
+    elif location.lower() == "rome":
+        return ROME_RESTAURANTS
     else:
-        return LONDON_RESTAURANTS + PARIS_RESTAURANTS
+        return LONDON_RESTAURANTS + PARIS_RESTAURANTS + ROME_RESTAURANTS
 
 
 def get_restaurant_by_id(restaurant_id: str) -> Optional[Restaurant]:
     """Get a specific restaurant by ID."""
-    all_restaurants = LONDON_RESTAURANTS + PARIS_RESTAURANTS
+    all_restaurants = LONDON_RESTAURANTS + PARIS_RESTAURANTS + ROME_RESTAURANTS
     for restaurant in all_restaurants:
         if restaurant.id == restaurant_id:
             return restaurant
@@ -40,7 +42,7 @@ def search_restaurants(
     rating_min: Optional[float] = None
 ) -> List[Restaurant]:
     """Search restaurants with filters."""
-    restaurants = get_restaurants_by_location(location) if location else LONDON_RESTAURANTS + PARIS_RESTAURANTS
+    restaurants = get_restaurants_by_location(location) if location else LONDON_RESTAURANTS + PARIS_RESTAURANTS + ROME_RESTAURANTS
 
     filtered = restaurants
 
@@ -78,7 +80,7 @@ def search_menu_items(
             all_items = menu
     else:
         # Search all restaurants
-        for restaurant in LONDON_RESTAURANTS + PARIS_RESTAURANTS:
+        for restaurant in LONDON_RESTAURANTS + PARIS_RESTAURANTS + ROME_RESTAURANTS:
             all_items.extend(restaurant.menu)
 
     filtered = all_items
