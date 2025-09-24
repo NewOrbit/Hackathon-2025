@@ -1,86 +1,94 @@
 """
-Trivia service with MCP tools for local secrets and insider information.
+Nutrition Trivia service with MCP tools for nutrition secrets and insider information.
 """
 
 import random
 from typing import Dict, Any, List, Optional
 from dataclasses import asdict
 
-from config import SECRET_DATABASE, TIP_CATEGORIES, SECRET_TYPES
-from models import AttractionSecret, SecretResponse
+from nutrition_config import NUTRITION_TRIVIA_DATABASE, NUTRITION_TIP_CATEGORIES, NUTRITION_SECRET_TYPES
+from models import NutritionSecret, NutritionResponse
+
+try:
+    from config import SECRET_DATABASE, TIP_CATEGORIES, SECRET_TYPES
+except ImportError:
+    SECRET_DATABASE = {}
+    TIP_CATEGORIES = {}
+    SECRET_TYPES = []
 
 
-def get_attraction_secret(attraction_id: str) -> Dict[str, Any]:
-    """Get a random secret, celebrity sighting, or insider tip for an attraction
+# Nutrition trivia functions
+def get_nutrition_secret(nutrition_topic: str) -> Dict[str, Any]:
+    """Get a random nutrition secret, celebrity fact, or nutrition tip for a topic
 
     Args:
-        attraction_id: ID of the attraction (e.g., "space_needle", "pike_place")
+        nutrition_topic: ID of the nutrition topic (e.g., "protein", "carbs", "vitamins")
 
     Returns:
-        SecretResponse object as dictionary or error dict
+        NutritionResponse object as dictionary or error dict
     """
     try:
-        attraction_id = attraction_id.lower().replace(" ", "_")
+        nutrition_topic = nutrition_topic.lower().replace(" ", "_")
 
-        if attraction_id not in SECRET_DATABASE:
+        if nutrition_topic not in NUTRITION_TRIVIA_DATABASE:
             return {
-                "error": f"Attraction '{attraction_id}' not found in our secrets database"
+                "error": f"Nutrition topic '{nutrition_topic}' not found in our nutrition database"
             }
 
-        attraction_data = SECRET_DATABASE[attraction_id]
+        topic_data = NUTRITION_TRIVIA_DATABASE[nutrition_topic]
 
         # Collect all available content
         all_content = []
-        for secret_type in SECRET_TYPES:
-            if secret_type in attraction_data:
-                for content in attraction_data[secret_type]:
+        for secret_type in NUTRITION_SECRET_TYPES:
+            if secret_type in topic_data:
+                for content in topic_data[secret_type]:
                     all_content.append({"type": secret_type, "content": content})
 
         if not all_content:
-            return {"error": f"No secrets found for attraction '{attraction_id}'"}
+            return {"error": f"No nutrition secrets found for topic '{nutrition_topic}'"}
 
         # Pick a random item
         random_item = random.choice(all_content)
 
-        secret_response = SecretResponse(
-            attraction_id=attraction_id,
+        nutrition_response = NutritionResponse(
+            nutrition_topic=nutrition_topic,
             secret_type=random_item["type"],
             content=random_item["content"],
             category=random_item["type"],
         )
 
-        return asdict(secret_response)
+        return asdict(nutrition_response)
 
     except Exception as e:
-        return {"error": f"Failed to get attraction secret: {str(e)}"}
+        return {"error": f"Failed to get nutrition secret: {str(e)}"}
 
 
-def get_insider_tip(
-    attraction_id: str, tip_type: Optional[str] = None
+def get_nutrition_tips(
+    nutrition_topic: str, tip_type: Optional[str] = None
 ) -> Dict[str, Any]:
-    """Get insider tips for a specific attraction, optionally filtered by type
+    """Get nutrition tips for a specific topic, optionally filtered by type
 
     Args:
-        attraction_id: ID of the attraction
-        tip_type: Optional tip category filter ("photo", "food", "timing", "access", "local")
+        nutrition_topic: ID of the nutrition topic
+        tip_type: Optional tip category filter ("macros", "vitamins", "hydration", etc.)
 
     Returns:
-        List of insider tips as dictionary or error dict
+        List of nutrition tips as dictionary or error dict
     """
     try:
-        attraction_id = attraction_id.lower().replace(" ", "_")
+        nutrition_topic = nutrition_topic.lower().replace(" ", "_")
 
-        if attraction_id not in SECRET_DATABASE:
+        if nutrition_topic not in NUTRITION_TRIVIA_DATABASE:
             return {
-                "error": f"Attraction '{attraction_id}' not found in our secrets database"
+                "error": f"Nutrition topic '{nutrition_topic}' not found in our nutrition database"
             }
 
-        attraction_data = SECRET_DATABASE[attraction_id]
+        topic_data = NUTRITION_TRIVIA_DATABASE[nutrition_topic]
 
-        if "insider_tips" not in attraction_data:
-            return {"error": f"No insider tips found for attraction '{attraction_id}'"}
+        if "nutrition_tips" not in topic_data:
+            return {"error": f"No nutrition tips found for topic '{nutrition_topic}'"}
 
-        tips = attraction_data["insider_tips"]
+        tips = topic_data["nutrition_tips"]
 
         # If tip_type is specified, try to filter (this is a simple keyword match)
         if tip_type:
@@ -94,145 +102,145 @@ def get_insider_tip(
                 tips = filtered_tips
             else:
                 return {
-                    "attraction_id": attraction_id,
+                    "nutrition_topic": nutrition_topic,
                     "tip_type": tip_type,
                     "tips": [],
                     "message": f"No tips found matching category '{tip_type}'",
                 }
 
         return {
-            "attraction_id": attraction_id,
+            "nutrition_topic": nutrition_topic,
             "tip_type": tip_type or "all",
             "tips": tips,
             "total_count": len(tips),
         }
 
     except Exception as e:
-        return {"error": f"Failed to get insider tips: {str(e)}"}
+        return {"error": f"Failed to get nutrition tips: {str(e)}"}
 
 
-def get_celebrity_drama(location: str) -> Dict[str, Any]:
-    """Get celebrity sightings and drama for a location
+def get_celebrity_nutrition(location: str) -> Dict[str, Any]:
+    """Get celebrity nutrition facts and secrets for a topic
 
     Args:
-        location: Location name (e.g., "space_needle", "pike_place", "times_square")
+        location: Nutrition topic name (e.g., "protein", "carbs", "vitamins")
 
     Returns:
-        Celebrity sightings and drama as dictionary or error dict
+        Celebrity nutrition facts as dictionary or error dict
     """
     try:
         location = location.lower().replace(" ", "_")
 
-        if location not in SECRET_DATABASE:
-            return {"error": f"Location '{location}' not found in our secrets database"}
+        if location not in NUTRITION_TRIVIA_DATABASE:
+            return {"error": f"Nutrition topic '{location}' not found in our nutrition database"}
 
-        attraction_data = SECRET_DATABASE[location]
+        topic_data = NUTRITION_TRIVIA_DATABASE[location]
 
-        if "celebrity_sightings" not in attraction_data:
-            return {"error": f"No celebrity sightings found for location '{location}'"}
+        if "celebrity_nutrition" not in topic_data:
+            return {"error": f"No celebrity nutrition facts found for topic '{location}'"}
 
-        sightings = attraction_data["celebrity_sightings"]
+        celebrity_facts = topic_data["celebrity_nutrition"]
 
-        # Get a random celebrity sighting
-        random_sighting = random.choice(sightings) if sightings else None
+        # Get a random celebrity fact
+        random_fact = random.choice(celebrity_facts) if celebrity_facts else None
 
         return {
-            "location": location,
-            "celebrity_sighting": random_sighting,
-            "all_sightings": sightings,
-            "total_count": len(sightings),
+            "nutrition_topic": location,
+            "celebrity_fact": random_fact,
+            "all_facts": celebrity_facts,
+            "total_count": len(celebrity_facts),
         }
 
     except Exception as e:
-        return {"error": f"Failed to get celebrity drama: {str(e)}"}
+        return {"error": f"Failed to get celebrity nutrition: {str(e)}"}
 
 
-def get_all_attraction_secrets(attraction_id: str) -> Dict[str, Any]:
-    """Get all secrets, celebrity sightings, and insider tips for an attraction
+def get_all_nutrition_secrets(nutrition_topic: str) -> Dict[str, Any]:
+    """Get all nutrition secrets, celebrity facts, and tips for a topic
 
     Args:
-        attraction_id: ID of the attraction
+        nutrition_topic: ID of the nutrition topic
 
     Returns:
-        Complete AttractionSecret object as dictionary or error dict
+        Complete NutritionSecret object as dictionary or error dict
     """
     try:
-        attraction_id = attraction_id.lower().replace(" ", "_")
+        nutrition_topic = nutrition_topic.lower().replace(" ", "_")
 
-        if attraction_id not in SECRET_DATABASE:
+        if nutrition_topic not in NUTRITION_TRIVIA_DATABASE:
             return {
-                "error": f"Attraction '{attraction_id}' not found in our secrets database"
+                "error": f"Nutrition topic '{nutrition_topic}' not found in our nutrition database"
             }
 
-        attraction_data = SECRET_DATABASE[attraction_id]
+        topic_data = NUTRITION_TRIVIA_DATABASE[nutrition_topic]
 
-        attraction_secret = AttractionSecret(
-            attraction_id=attraction_id,
-            secrets=attraction_data.get("secrets", []),
-            celebrity_sightings=attraction_data.get("celebrity_sightings", []),
-            insider_tips=attraction_data.get("insider_tips", []),
+        nutrition_secret = NutritionSecret(
+            nutrition_topic=nutrition_topic,
+            nutrition_secrets=topic_data.get("nutrition_secrets", []),
+            celebrity_nutrition=topic_data.get("celebrity_nutrition", []),
+            nutrition_tips=topic_data.get("nutrition_tips", []),
         )
 
-        return asdict(attraction_secret)
+        return asdict(nutrition_secret)
 
     except Exception as e:
-        return {"error": f"Failed to get attraction secrets: {str(e)}"}
+        return {"error": f"Failed to get nutrition secrets: {str(e)}"}
 
 
-def get_available_attractions() -> Dict[str, Any]:
-    """Get list of all attractions with secrets available
+def get_available_nutrition_topics() -> Dict[str, Any]:
+    """Get list of all nutrition topics with secrets available
 
     Returns:
-        List of available attractions as dictionary
+        List of available nutrition topics as dictionary
     """
     try:
-        attractions = list(SECRET_DATABASE.keys())
+        topics = list(NUTRITION_TRIVIA_DATABASE.keys())
 
         return {
-            "total_attractions": len(attractions),
-            "attractions": attractions,
-            "tip_categories": list(TIP_CATEGORIES.keys()),
-            "secret_types": SECRET_TYPES,
+            "total_topics": len(topics),
+            "topics": topics,
+            "tip_categories": list(NUTRITION_TIP_CATEGORIES.keys()),
+            "secret_types": NUTRITION_SECRET_TYPES,
         }
 
     except Exception as e:
-        return {"error": f"Failed to get available attractions: {str(e)}"}
+        return {"error": f"Failed to get available nutrition topics: {str(e)}"}
 
 
-def format_attraction_secrets(attraction_id: str) -> str:
-    """Format all secrets for an attraction as a readable string
+def format_nutrition_secrets(nutrition_topic: str) -> str:
+    """Format all nutrition secrets for a topic as a readable string
 
     Args:
-        attraction_id: ID of the attraction
+        nutrition_topic: ID of the nutrition topic
 
     Returns:
-        Formatted string with all attraction secrets
+        Formatted string with all nutrition secrets
     """
     try:
-        data = get_all_attraction_secrets(attraction_id)
+        data = get_all_nutrition_secrets(nutrition_topic)
         if "error" in data:
             return f"Error: {data['error']}"
 
-        result = f"🔍 **Secrets for {attraction_id.replace('_', ' ').title()}**\n\n"
+        result = f"🥗 **Nutrition Secrets for {nutrition_topic.replace('_', ' ').title()}**\n\n"
 
-        if data.get("secrets"):
-            result += "🤫 **Local Secrets:**\n"
-            for i, secret in enumerate(data["secrets"], 1):
+        if data.get("nutrition_secrets"):
+            result += "🔬 **Nutrition Secrets:**\n"
+            for i, secret in enumerate(data["nutrition_secrets"], 1):
                 result += f"{i}. {secret}\n"
             result += "\n"
 
-        if data.get("celebrity_sightings"):
-            result += "⭐ **Celebrity Sightings:**\n"
-            for i, sighting in enumerate(data["celebrity_sightings"], 1):
-                result += f"{i}. {sighting}\n"
+        if data.get("celebrity_nutrition"):
+            result += "⭐ **Celebrity Nutrition Facts:**\n"
+            for i, fact in enumerate(data["celebrity_nutrition"], 1):
+                result += f"{i}. {fact}\n"
             result += "\n"
 
-        if data.get("insider_tips"):
-            result += "💡 **Insider Tips:**\n"
-            for i, tip in enumerate(data["insider_tips"], 1):
+        if data.get("nutrition_tips"):
+            result += "💡 **Nutrition Tips:**\n"
+            for i, tip in enumerate(data["nutrition_tips"], 1):
                 result += f"{i}. {tip}\n"
 
         return result
 
     except Exception as e:
-        return f"Error: Failed to format attraction secrets: {str(e)}"
+        return f"Error: Failed to format nutrition secrets: {str(e)}"
