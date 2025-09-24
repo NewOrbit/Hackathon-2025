@@ -56,4 +56,4 @@ Get list of all attractions with secrets available.
 uv run mcp dev main.py
 ```
 
-The server will run on port 8010.
+The server will run on port 8012 by default.

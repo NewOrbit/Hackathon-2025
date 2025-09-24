@@ -7,10 +7,11 @@ This repository contains all materials for the hackathon focused on building age
 There are 2 pre-built MCP servers and a Jupyter notebook that can be run to execute LangChain to communicate with these MCP servers.
 
 - [Attractions MCP Server](mcp/attractions-mcp/README.md)
-- [Weather MCP Server](mcp/weather-mcp/README.md)
+- [Weather MCP Server (port 8009)](mcp/weather-mcp/README.md)
 - [Attractions Jupyter Notebook](agent/README.md)
-- [Macros MCP Server](mcp/macros-mcp/README.md)
-- [Nutritional Plan MCP Server](mcp/nutritional-plan-mcp/README.md)
+- [Macros MCP Server (port 8010)](mcp/macros-mcp/README.md)
+- [Nutritional Plan MCP Server (port 8011)](mcp/nutritional-plan-mcp/README.md)
+- [Trivia MCP Server (port 8012)](mcp/trivia-mcp/README.md)
 
 ## Getting Started
 

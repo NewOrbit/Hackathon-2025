@@ -19,7 +19,7 @@ from trivia_service import (
     format_attraction_secrets,
 )
 
-mcp = FastMCP("Trivia", port=8010)
+mcp = FastMCP("Trivia", port=8012)
 
 
 # tools
