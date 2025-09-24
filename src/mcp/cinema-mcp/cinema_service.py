@@ -32,7 +32,9 @@ def get_current_movies_data() -> Dict[str, Any]:
         movies_list = []
         for movie_data in current_movies:
             movie = parse_movie_data(movie_data)
-            movies_list.append({
+            # Only show movies with available seats
+            if movie.seats_remaining > 0:
+                movies_list.append({
                 "title": movie.title,
                 "description": movie.description,
                 "date": movie.date.isoformat(),
@@ -48,7 +50,7 @@ def get_current_movies_data() -> Dict[str, Any]:
                 "cast": movie_data.get("cast", []),
                 "is_sold_out": movie.is_sold_out,
                 "occupancy_percentage": round(movie.occupancy_percentage, 1)
-            })
+                })
         
         return {
             "cinema_name": "MovieMagic Cinema",
@@ -437,7 +439,7 @@ def get_customer_reservations_data(customer_email: str) -> Dict[str, Any]:
         email = customer_email.strip().lower()
         customer_reservations = [
             res for res in RESERVATIONS 
-            if res.customer_email.lower() == email
+            if res.customer_email.lower() == email and res.status != "cancelled"
         ]
         
         if not customer_reservations:
@@ -541,3 +543,209 @@ def cancel_reservation_data(
         
     except Exception as e:
         return {"error": f"Failed to cancel reservation: {str(e)}"}
+
+
+# Employee Management Functions
+def get_all_reservations_data(status_filter: Optional[str] = None) -> Dict[str, Any]:
+    """Get all reservations for cinema employee review
+    
+    Args:
+        status_filter: Filter by status ("confirmed", "completed", "cancelled") or None for all
+        
+    Returns:
+        List of all reservations matching the filter
+    """
+    try:
+        # Filter reservations by status if specified
+        if status_filter:
+            filtered_reservations = [
+                res for res in RESERVATIONS 
+                if res.status.lower() == status_filter.lower()
+            ]
+        else:
+            filtered_reservations = RESERVATIONS.copy()
+        
+        if not filtered_reservations:
+            status_msg = f" with status '{status_filter}'" if status_filter else ""
+            return {"error": f"No reservations found{status_msg}"}
+        
+        reservations_list = []
+        for i, reservation in enumerate(filtered_reservations, 1):
+            room_name = CINEMA_ROOMS.get(reservation.room, {}).get("name", reservation.room)
+            
+            reservations_list.append({
+                "reservation_number": i,
+                "movie_title": reservation.movie_title,
+                "date": reservation.movie_date.isoformat(),
+                "time": reservation.movie_time.strftime("%H:%M"),
+                "room": room_name,
+                "seats_reserved": reservation.seats_reserved,
+                "customer_name": reservation.customer_name,
+                "customer_email": reservation.customer_email,
+                "customer_phone": reservation.contact_info.phone,
+                "status": reservation.status,
+                "reservation_made": reservation.reservation_datetime.isoformat(),
+                "special_requests": reservation.special_requests
+            })
+        
+        return {
+            "status_filter": status_filter or "all",
+            "total_reservations": len(reservations_list),
+            "reservations": reservations_list
+        }
+        
+    except Exception as e:
+        return {"error": f"Failed to get reservations: {str(e)}"}
+
+
+def acknowledge_reservation_data(
+    customer_email: str,
+    title: str,
+    date: str,
+    time: str,
+    room: str
+) -> Dict[str, Any]:
+    """Acknowledge/complete a reservation (employee function)
+    
+    Args:
+        customer_email: Customer's email address
+        title: Movie title
+        date: Date in YYYY-MM-DD format
+        time: Time in HH:MM format
+        room: Room identifier
+        
+    Returns:
+        Acknowledgment confirmation or error dict
+    """
+    try:
+        if not customer_email or not customer_email.strip():
+            return {"error": "Customer email is required"}
+        
+        email = customer_email.strip().lower()
+        
+        # Parse date and time for comparison
+        try:
+            target_date = datetime.strptime(date, "%Y-%m-%d").date()
+            target_time = datetime.strptime(time, "%H:%M").time()
+        except ValueError as e:
+            return {"error": f"Invalid date or time format: {str(e)}"}
+        
+        # Find the reservation
+        reservation_to_acknowledge = None
+        for reservation in RESERVATIONS:
+            if (reservation.customer_email.lower() == email and 
+                reservation.movie_title.lower() == title.lower() and
+                reservation.movie_date == target_date and
+                reservation.movie_time == target_time and
+                reservation.room.lower() == room.lower() and
+                reservation.status == "confirmed"):
+                reservation_to_acknowledge = reservation
+                break
+        
+        if not reservation_to_acknowledge:
+            return {"error": f"No confirmed reservation found for {customer_email} for '{title}' on {date} at {time} in {room}"}
+        
+        # Acknowledge the reservation (mark as completed)
+        reservation_to_acknowledge.status = "completed"
+        
+        # Since the customer attended, we don't free up seats - they were actually used
+        # The seats remain "booked" as they were occupied during the showing
+        
+        room_name = CINEMA_ROOMS.get(room, {}).get("name", room)
+        
+        return {
+            "acknowledgment_confirmed": True,
+            "completed_reservation": {
+                "movie_title": title,
+                "date": date,
+                "time": time,
+                "room": room_name,
+                "seats_used": reservation_to_acknowledge.seats_reserved,
+                "customer_email": customer_email,
+                "customer_name": reservation_to_acknowledge.customer_name
+            },
+            "message": f"Reservation acknowledged as completed. Customer {reservation_to_acknowledge.customer_name} attended the showing."
+        }
+        
+    except Exception as e:
+        return {"error": f"Failed to acknowledge reservation: {str(e)}"}
+
+
+def revoke_reservation_data(
+    customer_email: str,
+    title: str,
+    date: str,
+    time: str,
+    room: str,
+    reason: Optional[str] = None
+) -> Dict[str, Any]:
+    """Revoke/cancel a reservation (employee function)
+    
+    Args:
+        customer_email: Customer's email address
+        title: Movie title
+        date: Date in YYYY-MM-DD format
+        time: Time in HH:MM format
+        room: Room identifier
+        reason: Reason for revocation (optional)
+        
+    Returns:
+        Revocation confirmation or error dict
+    """
+    try:
+        if not customer_email or not customer_email.strip():
+            return {"error": "Customer email is required"}
+        
+        email = customer_email.strip().lower()
+        
+        # Parse date and time for comparison
+        try:
+            target_date = datetime.strptime(date, "%Y-%m-%d").date()
+            target_time = datetime.strptime(time, "%H:%M").time()
+        except ValueError as e:
+            return {"error": f"Invalid date or time format: {str(e)}"}
+        
+        # Find the reservation
+        reservation_to_revoke = None
+        for reservation in RESERVATIONS:
+            if (reservation.customer_email.lower() == email and 
+                reservation.movie_title.lower() == title.lower() and
+                reservation.movie_date == target_date and
+                reservation.movie_time == target_time and
+                reservation.room.lower() == room.lower() and
+                reservation.status == "confirmed"):
+                reservation_to_revoke = reservation
+                break
+        
+        if not reservation_to_revoke:
+            return {"error": f"No confirmed reservation found for {customer_email} for '{title}' on {date} at {time} in {room}"}
+        
+        # Revoke the reservation (mark as cancelled)
+        reservation_to_revoke.status = "cancelled"
+        if reason:
+            reservation_to_revoke.special_requests = f"CANCELLED: {reason}"
+        
+        # Free up the seats (same as customer cancellation)
+        movie_data = get_movie_by_natural_id(title, date, time, room)
+        if movie_data:
+            movie_data["seats_booked"] = max(0, movie_data.get("seats_booked", 0) - reservation_to_revoke.seats_reserved)
+        
+        room_name = CINEMA_ROOMS.get(room, {}).get("name", room)
+        
+        return {
+            "revocation_confirmed": True,
+            "revoked_reservation": {
+                "movie_title": title,
+                "date": date,
+                "time": time,
+                "room": room_name,
+                "seats_freed": reservation_to_revoke.seats_reserved,
+                "customer_email": customer_email,
+                "customer_name": reservation_to_revoke.customer_name,
+                "reason": reason
+            },
+            "message": f"Reservation revoked successfully. {reservation_to_revoke.seats_reserved} seats have been freed up. Reason: {reason or 'No reason provided'}"
+        }
+        
+    except Exception as e:
+        return {"error": f"Failed to revoke reservation: {str(e)}"}
