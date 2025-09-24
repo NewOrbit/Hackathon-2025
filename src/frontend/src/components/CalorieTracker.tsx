@@ -12,83 +12,54 @@ import {
 
 import { initSession, sendMessage } from "../api/api";
 import {
+  type FormState,
+  type MealEntry,
+  type Totals,
+  type PlanData,
   initialFormState,
   initialTotals,
   isStepValid,
   steps,
   goalOptions,
-  type FormState,
-  type MealEntry,
-  type Totals,
+  calculateRemaining,
+  parsePlanResponse,
+  loadPersistedState,
+  savePersistedState,
+  clearPersistedState,
+  buildPlanPrompt,
+  buildMealPrompt,
 } from "./calorie-tracker";
 import { FormStep } from "./calorie-tracker/formStep";
 import { PlanCard } from "./calorie-tracker/PlanCard";
 import { MealLogger } from "./calorie-tracker/MealLogger";
-import {
-  calculateRemaining,
-  extractTargetsFromPlan,
-} from "./calorie-tracker/utils";
-
-function buildPlanPrompt(form: FormState) {
-  return `You are an AI nutrition coach. Use the nutritional_plan compose_plan tool to calculate daily calories and macronutrients for this user.
-
-User profile:
-- Name: ${form.name || "N/A"}
-- Sex: ${form.sex}
-- Age: ${form.ageYears}
-- Height: ${form.heightCm} cm
-- Weight: ${form.weightKg} kg
-- Activity level: ${form.activityLevel}
-- Goal: ${form.goal}
-- Weekly rate target (kg/week): ${form.weeklyRate || "0"}
-- Dietary notes: ${form.dietaryNotes || "none"}
-
-Return the response as clear Markdown with these sections:
-1. Daily Targets (calories and macros)
-2. Macro Split (percentages and gram targets)
-3. Guidance (3 short bullet points)
-Finish with a one-line invitation for the user to log their first meal.`;
-}
-
-function buildMealPrompt(
-  mealDescription: string,
-  totals: Totals,
-  planMarkdown: string
-) {
-  return `We already created the following nutrition plan:
-${planMarkdown}
-
-Current running totals (kcal, protein_g, carbs_g, fat_g): ${JSON.stringify(
-    totals
-  )}
-
-The user just consumed:
-"""${mealDescription}"""
-
-Use the macros analyze_macros/analyze_recipe tools to estimate this meal.
-Return JSON ONLY using this schema (no code fences):
-{
-  "meal": string,
-  "estimates": {"calories": number, "protein_g": number, "carbs_g": number, "fat_g": number},
-  "running_totals": {"calories": number, "protein_g": number, "carbs_g": number, "fat_g": number},
-  "notes": string
-}
-Round numbers to 1 decimal place.`;
-}
 
 export default function CalorieTracker() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [activeStep, setActiveStep] = useState(0);
   const [form, setForm] = useState<FormState>(initialFormState);
-  const [plan, setPlan] = useState<string>("");
+  const [planSummary, setPlanSummary] = useState<string>("");
+  const [planData, setPlanData] = useState<PlanData | null>(null);
   const [planError, setPlanError] = useState<string | null>(null);
   const [planLoading, setPlanLoading] = useState(false);
-  const [planTargets, setPlanTargets] = useState<Totals | null>(null);
   const [mealInput, setMealInput] = useState("");
   const [mealLoading, setMealLoading] = useState(false);
   const [mealError, setMealError] = useState<string | null>(null);
   const [entries, setEntries] = useState<MealEntry[]>([]);
   const [totals, setTotals] = useState<Totals>(initialTotals);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const persisted = loadPersistedState();
+    if (persisted) {
+      setForm(persisted.form);
+      setPlanSummary(persisted.planSummary);
+      setPlanData(persisted.planData);
+      setTotals(persisted.totals);
+      setEntries(persisted.entries);
+      setActiveStep(persisted.activeStep);
+    }
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -102,13 +73,14 @@ export default function CalorieTracker() {
   }, []);
 
   useEffect(() => {
+    if (!hydrated) return;
     if (!form.goal) return;
     const goalConfig = goalOptions.find((g) => g.value === form.goal);
     if (!goalConfig) return;
     if (form.weeklyRate.trim() === "" || form.weeklyRate === "0") {
       setForm((prev) => ({ ...prev, weeklyRate: goalConfig.defaultRate }));
     }
-  }, [form.goal]);
+  }, [form.goal, form.weeklyRate, hydrated]);
 
   const stepValid = useMemo(
     () => isStepValid(form, activeStep),
@@ -127,13 +99,16 @@ export default function CalorieTracker() {
     if (!sessionId) return;
     setPlanLoading(true);
     setPlanError(null);
-    setPlanTargets(null);
+    setPlanData(null);
+    setPlanSummary("");
     try {
       const prompt = buildPlanPrompt(form);
       const res = await sendMessage(sessionId, prompt);
-      const markdown = res.output.trim();
-      setPlan(markdown);
-      setPlanTargets(extractTargetsFromPlan(markdown));
+      const { summary, data } = parsePlanResponse(res.output);
+      setPlanSummary(summary);
+      setPlanData(data);
+      setTotals(initialTotals);
+      setEntries([]);
       setActiveStep(steps.length);
     } catch (error: any) {
       console.error(error);
@@ -144,13 +119,13 @@ export default function CalorieTracker() {
   };
 
   const handleLogMeal = async () => {
-    if (!sessionId || !mealInput.trim() || !plan) return;
+    if (!sessionId || !mealInput.trim() || !planSummary || !planData) return;
     setMealLoading(true);
     setMealError(null);
     const mealText = mealInput.trim();
     setMealInput("");
     try {
-      const prompt = buildMealPrompt(mealText, totals, plan);
+      const prompt = buildMealPrompt(mealText, totals, planSummary);
       const res = await sendMessage(sessionId, prompt);
       const raw = res.output.trim();
       let estimates: Totals | undefined;
@@ -191,9 +166,21 @@ export default function CalorieTracker() {
   };
 
   const remaining = useMemo(
-    () => calculateRemaining(planTargets, totals),
-    [planTargets, totals]
+    () => calculateRemaining(planData?.targets ?? null, totals),
+    [planData, totals]
   );
+
+  useEffect(() => {
+    if (!hydrated) return;
+    savePersistedState({
+      form,
+      planSummary,
+      planData,
+      totals,
+      entries,
+      activeStep,
+    });
+  }, [form, planSummary, planData, totals, entries, activeStep, hydrated]);
 
   return (
     <Stack spacing={3} sx={{ width: "min(960px, 100%)", mx: "auto", py: 4 }}>
@@ -256,26 +243,27 @@ export default function CalorieTracker() {
 
         {activeStep >= steps.length && (
           <PlanCard
-            plan={plan}
+            plan={planSummary}
             loading={planLoading}
             error={planError}
             onBackToEdit={() => setActiveStep(steps.length - 1)}
             onReset={() => {
-              setPlan("");
-              setPlanTargets(null);
+              setPlanSummary("");
+              setPlanData(null);
               setTotals(initialTotals);
               setEntries([]);
               setMealInput("");
               setForm(initialFormState);
               setActiveStep(0);
+              clearPersistedState();
             }}
           />
         )}
       </Paper>
 
-      {plan && (
+      {planSummary && (
         <MealLogger
-          plan={plan}
+          planSummary={planSummary}
           totals={totals}
           entries={entries}
           mealInput={mealInput}

@@ -20,6 +20,16 @@ export type Totals = {
   fat_g: number;
 };
 
+export type PlanData = {
+  targets: Totals;
+  guidance?: string[];
+  macroPercentages?: {
+    protein?: number;
+    carbs?: number;
+    fat?: number;
+  };
+};
+
 export type MealEntry = {
   meal: string;
   response: string;

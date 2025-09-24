@@ -17,7 +17,7 @@ function formatRemaining(totals: Totals) {
 }
 
 type MealLoggerProps = {
-  plan: string;
+  planSummary: string;
   totals: Totals;
   entries: MealEntry[];
   mealInput: string;
@@ -29,7 +29,7 @@ type MealLoggerProps = {
 };
 
 export function MealLogger({
-  plan,
+  planSummary,
   totals,
   entries,
   mealInput,
@@ -60,12 +60,12 @@ export function MealLogger({
           placeholder="e.g. grilled chicken salad with quinoa and avocado"
           value={mealInput}
           onChange={(e) => onInputChange(e.target.value)}
-          disabled={!plan}
+          disabled={!planSummary}
         />
         <Button
           variant="contained"
           onClick={onLogMeal}
-          disabled={loading || !mealInput.trim() || !plan}
+          disabled={loading || !mealInput.trim() || !planSummary}
           sx={{ minWidth: 160 }}
         >
           {loading ? "Tracking…" : "Add meal"}
