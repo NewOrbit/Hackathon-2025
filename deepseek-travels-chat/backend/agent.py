@@ -16,9 +16,9 @@ server_configs = {
         "transport": "streamable_http",
         "url": os.getenv("ATTRACTIONS_MCP_URL", "http://127.0.0.1:8008/mcp/")
     },
-    "travel_requirements": {
+    "requirements": {
         "transport": "streamable_http",
-        "url": os.getenv("TRAVEL_REQUIREMENTS_MCP_URL", "http://127.0.0.1:8010/mcp/")
+        "url": os.getenv("REQUIREMENTS_MCP_URL", "http://127.0.0.1:8010/mcp/")
     },
     "booking": {
         "transport": "streamable_http",
