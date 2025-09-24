@@ -9,9 +9,10 @@ from datetime import datetime
 # movie reviews
 @dataclass
 class MovieReview:
-    movieId: int
+    movie_id: int
     rating: int
-    review: str
+    comment: str
+    reviewer: str
     reviewDate: datetime
 
 # movie
@@ -24,10 +25,16 @@ class Movie:
     durationMins: int
     year: int
     genres: List[str]
-    reviews: List[MovieReview]
 
 @dataclass
 class MoviesList:
     genre: str
     total_count: int = 0
     movies: List[Movie] = None
+
+@dataclass
+class MovieReviewList:
+    movie: Movie
+    reviews: List[MovieReview]
+    total_count: int = 0
+    avg_rating: Optional[float] = None

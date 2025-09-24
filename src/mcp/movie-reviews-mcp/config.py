@@ -189,270 +189,315 @@ MOCK_REVIEWS = [
         "movie_id": 1,
         "reviewer": "Alice",
         "rating": 5,
-        "comment": "A mind-bending masterpiece with stunning visuals and a gripping plot."
+        "comment": "A mind-bending masterpiece with stunning visuals and a gripping plot.",
+        "reviewDate": "2024-03-01"
     },
     {
         "movie_id": 1,
         "reviewer": "Bob",
         "rating": 4,
-        "comment": "Complex and thought-provoking, but a bit hard to follow at times."
+        "comment": "Complex and thought-provoking, but a bit hard to follow at times.",
+        "reviewDate": "2024-03-02"
     },
     {
         "movie_id": 2,
         "reviewer": "Charlie",
         "rating": 5,
-        "comment": "An epic tale of family and power. A must-watch classic."
+        "comment": "An epic tale of family and power. A must-watch classic.",
+        "reviewDate": "2024-03-03"
     },
     {
         "movie_id": 2,
         "reviewer": "Diana",
         "rating": 5,
-        "comment": "Brilliant performances and an unforgettable story."
+        "comment": "Brilliant performances and an unforgettable story.",
+        "reviewDate": "2024-03-04"
     },
     {
         "movie_id": 3,
         "reviewer": "Eve",
         "rating": 5,
-        "comment": "Heath Ledger's Joker is iconic. A thrilling ride from start to finish."
+        "comment": "Heath Ledger's Joker is iconic. A thrilling ride from start to finish.",
+        "reviewDate": "2024-03-05"
     },
     {
         "movie_id": 3,
         "reviewer": "Frank",
         "rating": 4,
-        "comment": "Great action and depth, though a bit dark for my taste."
+        "comment": "Great action and depth, though a bit dark for my taste.",
+        "reviewDate": "2024-03-06"
     },
     {
         "movie_id": 4,
         "reviewer": "Grace",
         "rating": 5,
-        "comment": "A wild, stylish film with unforgettable dialogue."
+        "comment": "A wild, stylish film with unforgettable dialogue.",
+        "reviewDate": "2024-03-07"
     },
     {
         "movie_id": 4,
         "reviewer": "Henry",
         "rating": 4,
-        "comment": "Unique storytelling and great cast."
+        "comment": "Unique storytelling and great cast.",
+        "reviewDate": "2024-03-08"
     },
     {
         "movie_id": 5,
         "reviewer": "Ivy",
         "rating": 5,
-        "comment": "Heartwarming and inspirational. Tom Hanks is fantastic."
+        "comment": "Heartwarming and inspirational. Tom Hanks is fantastic.",
+        "reviewDate": "2024-03-09"
     },
     {
         "movie_id": 5,
         "reviewer": "Jack",
         "rating": 4,
-        "comment": "A touching story with memorable moments."
+        "comment": "A touching story with memorable moments.",
+        "reviewDate": "2024-03-10"
     },
     {
         "movie_id": 6,
         "reviewer": "Karen",
         "rating": 5,
-        "comment": "Visually stunning and emotionally powerful."
+        "comment": "Visually stunning and emotionally powerful.",
+        "reviewDate": "2024-03-11"
     },
     {
         "movie_id": 6,
         "reviewer": "Leo",
         "rating": 4,
-        "comment": "Ambitious sci-fi with a moving story."
+        "comment": "Ambitious sci-fi with a moving story.",
+        "reviewDate": "2024-03-12"
     },
     {
         "movie_id": 7,
         "reviewer": "Mona",
         "rating": 5,
-        "comment": "A brilliant social satire with suspenseful twists."
+        "comment": "A brilliant social satire with suspenseful twists.",
+        "reviewDate": "2024-03-13"
     },
     {
         "movie_id": 7,
         "reviewer": "Nate",
         "rating": 4,
-        "comment": "Darkly funny and deeply unsettling."
+        "comment": "Darkly funny and deeply unsettling.",
+        "reviewDate": "2024-03-14"
     },
     {
         "movie_id": 8,
         "reviewer": "Olivia",
         "rating": 5,
-        "comment": "A powerful and emotional historical drama."
+        "comment": "A powerful and emotional historical drama.",
+        "reviewDate": "2024-03-15"
     },
     {
         "movie_id": 8,
         "reviewer": "Paul",
         "rating": 5,
-        "comment": "Heart-wrenching and beautifully acted."
+        "comment": "Heart-wrenching and beautifully acted.",
+        "reviewDate": "2024-03-16"
     },
     {
         "movie_id": 9,
         "reviewer": "Quinn",
         "rating": 5,
-        "comment": "A moving story of hope and friendship."
+        "comment": "A moving story of hope and friendship.",
+        "reviewDate": "2024-03-17"
     },
     {
         "movie_id": 9,
         "reviewer": "Rita",
         "rating": 5,
-        "comment": "Timeless and uplifting. A true classic."
+        "comment": "Timeless and uplifting. A true classic.",
+        "reviewDate": "2024-03-18"
     },
     {
         "movie_id": 10,
         "reviewer": "Sam",
         "rating": 5,
-        "comment": "Magical animation with a rich, imaginative world."
+        "comment": "Magical animation with a rich, imaginative world.",
+        "reviewDate": "2024-03-19"
     },
     {
         "movie_id": 10,
         "reviewer": "Tina",
         "rating": 4,
-        "comment": "Beautiful visuals and a touching story."
+        "comment": "Beautiful visuals and a touching story.",
+        "reviewDate": "2024-03-20"
     },
     {
         "movie_id": 11,
         "reviewer": "Uma",
         "rating": 5,
-        "comment": "Epic battles and a compelling hero."
+        "comment": "Epic battles and a compelling hero.",
+        "reviewDate": "2024-03-21"
     },
     {
         "movie_id": 11,
         "reviewer": "Victor",
         "rating": 4,
-        "comment": "Intense action and strong performances."
+        "comment": "Intense action and strong performances.",
+        "reviewDate": "2024-03-22"
     },
     {
         "movie_id": 12,
         "reviewer": "Wendy",
         "rating": 5,
-        "comment": "Mind-blowing concept and great action."
+        "comment": "Mind-blowing concept and great action.",
+        "reviewDate": "2024-03-23"
     },
     {
         "movie_id": 12,
         "reviewer": "Xander",
         "rating": 4,
-        "comment": "Innovative and entertaining sci-fi."
+        "comment": "Innovative and entertaining sci-fi.",
+        "reviewDate": "2024-03-24"
     },
     {
         "movie_id": 13,
         "reviewer": "Yara",
         "rating": 5,
-        "comment": "Dark, clever, and unforgettable."
+        "comment": "Dark, clever, and unforgettable.",
+        "reviewDate": "2024-03-25"
     },
     {
         "movie_id": 13,
         "reviewer": "Zane",
         "rating": 4,
-        "comment": "Unique story with strong performances."
+        "comment": "Unique story with strong performances.",
+        "reviewDate": "2024-03-26"
     },
     {
         "movie_id": 14,
         "reviewer": "Abby",
         "rating": 5,
-        "comment": "Epic fantasy with breathtaking visuals."
+        "comment": "Epic fantasy with breathtaking visuals.",
+        "reviewDate": "2024-03-27"
     },
     {
         "movie_id": 14,
         "reviewer": "Ben",
         "rating": 5,
-        "comment": "A fitting end to a legendary trilogy."
+        "comment": "A fitting end to a legendary trilogy.",
+        "reviewDate": "2024-03-28"
     },
     {
         "movie_id": 15,
         "reviewer": "Cara",
         "rating": 5,
-        "comment": "A childhood favorite with memorable songs."
+        "comment": "A childhood favorite with memorable songs.",
+        "reviewDate": "2024-03-29"
     },
     {
         "movie_id": 15,
         "reviewer": "Dan",
         "rating": 4,
-        "comment": "Beautiful animation and a touching story."
+        "comment": "Beautiful animation and a touching story.",
+        "reviewDate": "2024-03-30"
     },
     {
         "movie_id": 16,
         "reviewer": "Ella",
         "rating": 5,
-        "comment": "Gripping crime drama with stellar acting."
+        "comment": "Gripping crime drama with stellar acting.",
+        "reviewDate": "2024-03-31"
     },
     {
         "movie_id": 16,
         "reviewer": "Finn",
         "rating": 4,
-        "comment": "Intense and well-crafted mob story."
+        "comment": "Intense and well-crafted mob story.",
+        "reviewDate": "2024-04-01"
     },
     {
         "movie_id": 17,
         "reviewer": "Gina",
         "rating": 5,
-        "comment": "Chilling and suspenseful thriller."
+        "comment": "Chilling and suspenseful thriller.",
+        "reviewDate": "2024-04-02"
     },
     {
         "movie_id": 17,
         "reviewer": "Hank",
         "rating": 4,
-        "comment": "Great performances and a gripping plot."
+        "comment": "Great performances and a gripping plot.",
+        "reviewDate": "2024-04-03"
     },
     {
         "movie_id": 18,
         "reviewer": "Iris",
         "rating": 5,
-        "comment": "A powerful and realistic war film."
+        "comment": "A powerful and realistic war film.",
+        "reviewDate": "2024-04-04"
     },
     {
         "movie_id": 18,
         "reviewer": "Jake",
         "rating": 4,
-        "comment": "Intense and emotional storytelling."
+        "comment": "Intense and emotional storytelling.",
+        "reviewDate": "2024-04-05"
     },
     {
         "movie_id": 19,
         "reviewer": "Kara",
         "rating": 5,
-        "comment": "A fascinating tale of rivalry and obsession."
+        "comment": "A fascinating tale of rivalry and obsession.",
+        "reviewDate": "2024-04-06"
     },
     {
         "movie_id": 19,
         "reviewer": "Liam",
         "rating": 4,
-        "comment": "Intriguing plot with excellent twists."
+        "comment": "Intriguing plot with excellent twists.",
+        "reviewDate": "2024-04-07"
     },
     {
         "movie_id": 20,
         "reviewer": "Mia",
         "rating": 5,
-        "comment": "Electrifying performances and a compelling story."
+        "comment": "Electrifying performances and a compelling story.",
+        "reviewDate": "2024-04-08"
     },
     {
         "movie_id": 20,
         "reviewer": "Noah",
         "rating": 4,
-        "comment": "Intense and inspiring musical drama."
+        "comment": "Intense and inspiring musical drama.",
+        "reviewDate": "2024-04-09"
     },
     {
         "movie_id": 1,
         "reviewer": "Oscar",
         "rating": 2,
-        "comment": "Too confusing and dragged on for too long."
+        "comment": "Too confusing and dragged on for too long.",
+        "reviewDate": "2024-04-10"
     },
     {
         "movie_id": 5,
         "reviewer": "Pam",
         "rating": 2,
-        "comment": "Overrated and slow, didn't connect with the story."
+        "comment": "Overrated and slow, didn't connect with the story.",
+        "reviewDate": "2024-04-11"
     },
     {
         "movie_id": 7,
         "reviewer": "Quentin",
         "rating": 1,
-        "comment": "Found it boring and hard to follow."
+        "comment": "Found it boring and hard to follow.",
+        "reviewDate": "2024-04-12"
     },
     {
         "movie_id": 12,
         "reviewer": "Ralph",
         "rating": 2,
-        "comment": "Not as groundbreaking as people say, felt dated."
+        "comment": "Not as groundbreaking as people say, felt dated.",
+        "reviewDate": "2024-04-13"
     },
     {
         "movie_id": 15,
         "reviewer": "Sophie",
         "rating": 1,
-        "comment": "Didn't enjoy the animation style or the music."
+        "comment": "Didn't enjoy the animation style or the music.",
+        "reviewDate": "2024-04-14"
     }
 ]
