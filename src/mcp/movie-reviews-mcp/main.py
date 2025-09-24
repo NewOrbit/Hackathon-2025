@@ -90,7 +90,7 @@ def search_and_format_movies(
 
 
 @mcp.tool()
-def get_movie_reviews_by_title(title: string) -> str:
+def get_movie_reviews_by_title(title: str) -> str:
     """Get reviews for a movie by its title and return formatted results
 
     Args:
