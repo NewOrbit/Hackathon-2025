@@ -19,7 +19,7 @@ from weather_service import (
 )
 
 
-mcp = FastMCP("Weather", port=8009)
+mcp = FastMCP("Weather")
 
 # tools
 @mcp.tool()
@@ -59,4 +59,4 @@ def weather_summary_prompt(location: str, include_forecast: bool = False) -> str
     return get_weather_summary_prompt(location, include_forecast)
 
 if __name__ == "__main__":
-    mcp.run("streamable-http")
+    mcp.run()
