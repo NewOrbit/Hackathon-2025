@@ -19,3 +19,5 @@ class Menu:
     id: int
     name: str
     items: List[MenuItem]
+    location: Optional[str] = None
+    cuisine: Optional[str] = None
