@@ -1,11 +1,11 @@
 # Restaurants MCP Server
 
-A comprehensive Model Context Protocol (MCP) server for restaurant discovery, menu browsing, and reservation booking. This service provides detailed restaurant information with nutritional data for restaurants in London and Paris, designed to integrate with nutrition and macro tracking services.
+A comprehensive Model Context Protocol (MCP) server for restaurant discovery, menu browsing, and reservation booking. This service provides detailed restaurant information with nutritional data for restaurants in London, Paris, and Rome, designed to integrate with nutrition and macro tracking services.
 
 ## Features
 
 ### 🍽️ Restaurant Discovery
-- Browse restaurants by location (London, Paris)
+- Browse restaurants by location (London, Paris, Rome)
 - Search by cuisine type, price range, and rating
 - Detailed restaurant information including hours, contact details, and special features
 
@@ -64,7 +64,7 @@ uv run mcp dev main.py
 
 ## Sample Data
 
-The service includes hardcoded data for restaurants in London and Paris:
+The service includes hardcoded data for restaurants in London, Paris, and Rome:
 
 ### London Restaurants
 - **The Ivy** - Classic British cuisine ($$$$, 4.5★)
@@ -73,6 +73,10 @@ The service includes hardcoded data for restaurants in London and Paris:
 ### Paris Restaurants
 - **L'Atelier de Joël Robuchon** - Michelin-starred French cuisine ($$$$, 4.7★)
 - **Le Comptoir du Relais** - Traditional French bistro ($$$, 4.2★)
+
+### Rome Restaurants
+- **Roscioli** - Historic Roman trattoria with traditional cuisine ($$$, 4.6★)
+- **Armando al Pantheon** - Family-run trattoria near the Pantheon ($$, 4.4★)
 
 ## Nutritional Data Structure
 

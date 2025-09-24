@@ -5,7 +5,7 @@ To run this server:
     uv run mcp dev main.py
 
 Provides restaurant information, menu details with nutritional data, and booking capabilities
-for restaurants in London and Paris.
+for restaurants in London, Paris, and Rome.
 """
 
 from typing import Dict, Any, Optional, List
@@ -28,10 +28,10 @@ mcp = FastMCP("Restaurants", port=8014)
 # Restaurant discovery tools
 @mcp.tool()
 def get_restaurants(location: Optional[str] = None) -> Dict[str, Any]:
-    """Get restaurants by location (London or Paris)
+    """Get restaurants by location (London, Paris, or Rome)
 
     Args:
-        location: City name - "London", "Paris", or None for all
+        location: City name - "London", "Paris", "Rome", or None for all
 
     Returns:
         List of restaurants with basic information
@@ -67,8 +67,8 @@ def search_restaurants_tool(
     """Search restaurants with filters
 
     Args:
-        location: City name (London, Paris)
-        cuisine_type: Type of cuisine (British, French, Indian, etc.)
+        location: City name (London, Paris, Rome)
+        cuisine_type: Type of cuisine (British, French, Indian, Italian, etc.)
         price_range: Price range ($, $$, $$$, $$$$)
         rating_min: Minimum rating (1.0-5.0)
 
