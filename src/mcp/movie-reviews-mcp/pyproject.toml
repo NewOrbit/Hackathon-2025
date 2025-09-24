@@ -1,7 +1,7 @@
 [project]
-name = "attractions-mcp"
+name = "movie-reviews-mcp"
 version = "1.0.0"
-description = "MCP server for discovering and booking tourist attractions worldwide"
+description = "MCP server for discovering movies and reviews"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

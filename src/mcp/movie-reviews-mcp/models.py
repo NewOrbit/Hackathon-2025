@@ -25,3 +25,9 @@ class Movie:
     year: int
     genres: List[str]
     reviews: List[MovieReview]
+
+@dataclass
+class MoviesList:
+    genre: str
+    total_count: int = 0
+    movies: List[Movie] = None

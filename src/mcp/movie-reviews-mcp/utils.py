@@ -8,8 +8,8 @@ import string
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timedelta
 
-from config import MOVIE_GENRES, MOCK_MOVIES
-from models import Coordinates, Location, Attraction
+from config import MOVIE_GENRES, MOCK_MOVIES, MOCK_REVIEWS
+from models import Movie
 
 
 def make_api_request(url: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
@@ -56,128 +56,68 @@ def search_movies(
         "total": len(filtered_movies)
     }
 
+def get_random_famous_movie() -> Optional[Dict[str, Any]]:
+    """Get a random famous movie from mock data"""
+    if not MOCK_MOVIES:
+        return None
+    return random.choice(MOCK_MOVIES)
 
 
-
-
-def parse_coordinates(lat: float, lon: float) -> Coordinates:
-    """Create coordinates object from lat/lon"""
-    return Coordinates(lat=lat, lon=lon)
-
-
-def parse_location_data(data: Dict[str, Any]) -> Location:
-    """Parse location data from API response"""
-    coords = None
-    if data.get("latitude") and data.get("longitude"):
-        coords = parse_coordinates(data["latitude"], data["longitude"])
-
-    return Location(
-        city=data.get("city", ""),
-        country=data.get("country", ""),
-        region=data.get("region", ""),
-        coordinates=coords
-    )
-
-
-def parse_movie_data(data: Dict[str, Any]) -> Attraction:
+def parse_movie_data(data: Dict[str, Any]) -> Movie:
     """Parse movie data from API response"""
-    location = parse_location_data(data.get("location", {}))
 
-    return Attraction(
+    return Movie(
         id=data.get("id", 0),
         name=data.get("name", ""),
         description=data.get("description", ""),
         genre=data.get("genre", ""),
-        location=location,
         rating=data.get("rating"),
-        image_url=data.get("image_url"),
-        website=data.get("website"),
-        opening_hours=data.get("opening_hours"),
-        entry_fee=data.get("entry_fee")
     )
-
-
-def format_movie_name(movie: Attraction) -> str:
-    """Format movie name with location"""
-    name = movie.name
-    if movie.location.city:
-        name += f", {movie.location.city}"
-    if movie.location.country:
-        name += f", {movie.location.country}"
-    return name
 
 
 def get_genre_display_name(genre: str) -> str:
     """Get display name for genre"""
-    return ATTRACTION_CATEGORIES.get(genre.lower(), genre.title())
+    return MOVIE_GENRES.get(genre.lower(), genre.title())
 
 
-def generate_booking_id() -> str:
-    """Generate a unique booking ID"""
-    timestamp = datetime.now().strftime("%Y%m%d%H%M")
-    random_part = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-    return f"ATT-{timestamp}-{random_part}"
+def format_duration(minutes: int) -> str:
+    """Format duration from minutes to hours and minutes"""
+    hours = minutes // 60
+    mins = minutes % 60
+    if hours > 0:
+        return f"{hours}h {mins}m"
+    return f"{mins}m"
 
 
-def generate_confirmation_code() -> str:
-    """Generate a confirmation code"""
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+def get_movie_rating_from_mock_reviews(movie: Movie) -> str:
+    """Get movie rating from mock reviews"""
+
+    ratings = []
+
+    for review in MOCK_REVIEWS:
+        if review["movie_id"] == movie.id:
+            ratings.append(review["rating"])
+
+    if ratings:
+        avg_rating = sum(ratings) / len(ratings)
+        return f"{avg_rating:.1f}/5.0"
+
+    return "Not Rated"
 
 
-def validate_visit_date(date_str: str) -> bool:
-    """Validate that visit date is in the future"""
-    try:
-        visit_date = datetime.strptime(date_str, "%Y-%m-%d")
-        return visit_date.date() > datetime.now().date()
-    except ValueError:
-        return False
-
-
-def validate_email(email: str) -> bool:
-    """Basic email validation"""
-    return "@" in email and "." in email.split("@")[1]
-
-
-def calculate_estimated_cost(num_visitors: int, entry_fee: Optional[str] = None) -> Optional[float]:
-    """Calculate estimated cost based on number of visitors"""
-    if not entry_fee or "free" in entry_fee.lower():
-        return 0.0
-
-    # Simple cost calculation - in reality this would be more complex
-    try:
-        # Extract number from entry fee string (e.g., "$15", "₹500")
-        import re
-        numbers = re.findall(r'\d+\.?\d*', entry_fee)
-        if numbers:
-            base_cost = float(numbers[0])
-            return base_cost * num_visitors
-    except (ValueError, IndexError):
-        pass
-
-    return None
-
-
-def format_movie_details(movie: Attraction) -> str:
+def format_movie_details(movie: Movie) -> str:
     """Format movie details as a readable string"""
-    location_str = f"{movie.location.city}, {movie.location.country}" if movie.location.city else movie.location.country
 
-    details = f"🏛️ {movie.name}\n"
-    details += f"📍 Location: {location_str}\n"
-    details += f"🏷️ Category: {get_genre_display_name(movie.genre)}\n"
+    details = f"🎞️ {movie.title}\n"
+    details += f"🏷️ Genre: {get_genre_display_name(movie.genre)}\n"
 
     if movie.rating:
-        details += f"⭐ Rating: {movie.rating}/5.0\n"
+        details += f"⭐ Rating:  {get_movie_rating_from_mock_reviews(movie)}\n"
 
-    if movie.opening_hours:
-        details += f"🕒 Hours: {movie.opening_hours}\n"
+    if movie.synopsis:
+        details += f"\n📝 Synopsis: {movie.synopsis}\n"
 
-    if movie.entry_fee:
-        details += f"💰 Entry Fee: {movie.entry_fee}\n"
-
-    if movie.description:
-        details += f"\n📝 Description: {movie.description}\n"
-
-    if movie.website:
-        details += f"🌐 Website: {movie.website}\n"
+    if movie.durationMins:
+        details += f"⏳ Duration: {format_duration(movie.durationMins)}\n"
 
     return details

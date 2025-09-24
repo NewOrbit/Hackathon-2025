@@ -11,153 +11,108 @@ and booking capabilities.
 from typing import Dict, Any, Optional
 from mcp.server.fastmcp import FastMCP
 
-from attractions_service import (
-    get_attraction_details_data,
-    search_attractions_data, 
-    get_random_attraction_data,
-    get_world_wonders_data,
-    book_attraction_data,
-    get_attraction_categories_data,
-    format_attraction_resource,
-    get_booking_summary_prompt,
+from movie_service import (
+    get_movie_genres_data,
+    get_random_movie_data,
+    parse_movie_data,
+    search_movies_data,
+    get_random_famous_movie_data,
+    get_movie_details_data,
+    get_movie_reviews_data,
+    format_movie_resource,
     format_search_results
 )
 
-mcp = FastMCP("Attractions", port=8008)
+mcp = FastMCP("MovieReviews", port=8011)
 
 # tools
 @mcp.tool()
-def get_attraction_details(attraction_id: int) -> Dict[str, Any]:
-    """Get detailed information about a specific tourist attraction
-    
+def get_movie_details(movie_id: int) -> Dict[str, Any]:
+    """Get detailed information about a specific movie
+
     Args:
-        attraction_id: Unique ID of the attraction
-        
+        movie_id: Unique ID of the movie
+
     Returns:
-        AttractionDetails object as dictionary with attraction info, facilities, and visiting tips
+        MovieDetails object as dictionary with movie info, reviews, and related movies
     """
-    return get_attraction_details_data(attraction_id)
+    return get_movie_details_data(movie_id)
 
 @mcp.tool()
-def search_attractions(
-    location: Optional[str] = None, 
-    category: Optional[str] = None, 
+def search_movies(
+    genre: Optional[str] = None,
     limit: int = 20
 ) -> Dict[str, Any]:
-    """Search for tourist attractions with optional filters
-    
+    """Search for movies with optional filters
+
     Args:
-        location: Location to search in (e.g., "Paris", "India", "Italy")
-        category: Category filter - "historical", "natural", "cultural", "religious", "modern", "museums", "parks", "beaches", "mountains", "architecture", "entertainment", "adventure"
+        genre: Genre filter - "action", "comedy", "drama", etc.
         limit: Maximum number of results (1-100, default: 20)
-        
+
     Returns:
-        AttractionsList object as dictionary with matching attractions
+        MoviesList object as dictionary with matching movies
     """
-    return search_attractions_data(location, category, limit)
+    return search_movies_data(genre, limit)
 
 @mcp.tool()
-def get_random_attraction(region: str = "famous") -> Dict[str, Any]:
-    """Get a random tourist attraction for inspiration
-    
+def get_random_movie() -> Dict[str, Any]:
+    """Get a random movie for inspiration
+
     Args:
-        region: Region type - "famous" for world famous attractions, "india" for Indian attractions
-        
+        genre: Genre type - "famous" for world famous movies, "india" for Indian movies
+
     Returns:
-        Attraction object as dictionary with random attraction details
+        Movie object as dictionary with random movie details
     """
-    return get_random_attraction_data(region)
+    return get_random_movie_data()
+
+
 
 @mcp.tool()
-def book_attraction(
-    attraction_id: int,
-    visitor_name: str,
-    email: str,
-    visit_date: str,
-    num_visitors: int = 1,
-    phone: Optional[str] = None,
-    special_requirements: Optional[str] = None
-) -> Dict[str, Any]:
-    """Book a visit to a tourist attraction
-    
-    Args:
-        attraction_id: ID of the attraction to book
-        visitor_name: Name of the primary visitor
-        email: Email address for booking confirmation
-        visit_date: Visit date in YYYY-MM-DD format
-        num_visitors: Number of visitors (1-50, default: 1)
-        phone: Optional phone number
-        special_requirements: Optional special requirements or requests
-        
-    Returns:
-        BookingResponse object as dictionary with booking confirmation details
-    """
-    return book_attraction_data(
-        attraction_id, visitor_name, email, visit_date, 
-        num_visitors, phone, special_requirements
-    )
-
-@mcp.tool()
-def search_and_format_attractions(
-    location: Optional[str] = None,
-    category: Optional[str] = None,
+def search_and_format_movies(
+    genre: Optional[str] = None,
     limit: int = 10
 ) -> str:
-    """Search for attractions and return formatted results for easy reading
-    
+    """Search for movies and return formatted results for easy reading
+
     Args:
-        location: Location to search in (e.g., "Paris", "India", "Italy")  
-        category: Category filter (e.g., "historical", "natural", "cultural")
+        genre: Genre filter (e.g., "action", "comedy", "drama")
         limit: Maximum number of results (1-20, default: 10)
-        
+
     Returns:
-        Formatted string with attraction search results
+        Formatted string with movie search results
     """
     if limit > 20:
         limit = 20
-    
-    search_data = search_attractions_data(location, category, limit)
+
+    search_data = search_movies_data(genre, limit)
     return format_search_results(search_data)
 
-# resources  
-@mcp.resource("attraction://{attraction_id}")
-def get_attraction_resource(attraction_id: int) -> str:
-    """Get attraction information as a formatted resource"""
-    return format_attraction_resource(attraction_id)
+# resources
+@mcp.resource("movie://{movie_id}")
+def get_movie_resource(movie_id: int) -> str:
+    """Get movie information as a formatted resource"""
+    return format_movie_resource(movie_id)
 
-@mcp.resource("attractions://search/{location}")
-def get_attractions_by_location_resource(location: str) -> str:
-    """Get attractions for a location as a formatted resource"""
-    search_data = search_attractions_data(location=location, limit=10)
+@mcp.resource("movies://genre/{genre}")
+def get_movies_by_genre_resource(genre: str) -> str:
+    """Get movies by genre as a formatted resource"""
+    search_data = search_movies_data(genre=genre, limit=10)
     return format_search_results(search_data)
 
-@mcp.resource("attractions://category/{category}")
-def get_attractions_by_category_resource(category: str) -> str:
-    """Get attractions by category as a formatted resource"""
-    search_data = search_attractions_data(category=category, limit=10)
+@mcp.resource("movies://genre")
+def get_movies() -> str:
+    """Get 10 movies by formatted resource"""
+    search_data = search_movies_data(limit=10)
     return format_search_results(search_data)
 
-@mcp.resource("attractions://category")
-def get_attractions() -> str:
-    """Get 10 attractions by formatted resource"""
-    search_data = search_attractions_data(limit=10)
-    return format_search_results(search_data)
+@mcp.resource("movies://genres")
+def get_movie_genres_resource() -> str:
+    """Get list of available movie genres as a formatted resource"""
+    return get_movie_genres_data()
 
-@mcp.resource("attractions://categories")
-def get_attraction_categories_resource() -> str:
-    """Get list of available attraction categories as a formatted resource"""
-    return get_attraction_categories_data()
-
-@mcp.resource("attractions://wonders")
-def get_world_wonders_resource() -> str:
-    """Get list of the Wonders of the World attractions as a formatted resource"""
-    return get_world_wonders_data()
 
 # prompts
-@mcp.prompt()
-def attraction_booking_prompt(location: str, category: Optional[str] = None) -> str:
-    """Generate a prompt for attraction booking assistance"""
-    return get_booking_summary_prompt(location, category)
 
 @mcp.prompt()
 def travel_planning_prompt(location: str, days: int = 3) -> str:
@@ -178,7 +133,7 @@ def attraction_comparison_prompt(attraction_ids: str) -> str:
     """Generate a prompt for comparing multiple attractions"""
     return f"""Please provide a detailed comparison of these attractions (IDs: {attraction_ids}), including:
 1. Unique features and highlights of each
-2. Best times to visit and crowd levels  
+2. Best times to visit and crowd levels
 3. Entry requirements and booking procedures
 4. Approximate visit duration
 5. Nearby attractions and activities
