@@ -12,14 +12,14 @@ import {
 
 import { initSession, sendMessage } from "../api/api";
 import {
-  FormState,
-  MealEntry,
-  Totals,
   initialFormState,
   initialTotals,
   isStepValid,
   steps,
   goalOptions,
+  type FormState,
+  type MealEntry,
+  type Totals,
 } from "./calorie-tracker";
 import { FormStep } from "./calorie-tracker/formStep";
 import { PlanCard } from "./calorie-tracker/PlanCard";
