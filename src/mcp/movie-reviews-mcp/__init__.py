@@ -1,21 +1,19 @@
 """
-Tourist Attractions MCP Package - Discover and book attractions worldwide.
+Movie Reviews MCP Package - Discover list of movies and reviews
 """
 
-from attractions_service import (
-    get_attraction_details_data, 
-    search_attractions_data,
-    get_random_attraction_data,
-    get_world_wonders_data,
-    book_attraction_data,
-    get_attraction_categories_data
+from movie_service import (
+    get_movie_details_data,
+    search_movies_data,
+    get_random_famous_movie_data,
+    get_movie_reviews_data,
+    format_movie_resource
 )
 from models import (
-    Attraction, AttractionDetails, BookingRequest, BookingResponse,
-    AttractionsList, SearchFilters, Location, Coordinates
+    Movie, MovieReview, MovieList
 )
 from utils import (
-    get_attraction_by_id, search_attractions, parse_attraction_data,
+    get_movie_by_id, search_movies, parse_movie_data,
     format_attraction_name, get_category_display_name, generate_booking_id,
     validate_visit_date, validate_email, format_attraction_details
 )
@@ -23,28 +21,23 @@ from utils import (
 __version__ = "1.0.0"
 __all__ = [
     # Service functions
-    "get_attraction_details_data",
-    "search_attractions_data", 
-    "get_random_attraction_data",
-    "get_world_wonders_data",
-    "book_attraction_data",
-    "get_attraction_categories_data",
+    "parse_movie_data",
+    "search_movies_data",
+    "get_random_famous_movie_data",
+    "get_movie_details_data",
+    "get_movie_reviews_data",
+    "format_movie_resource",
     # Models
-    "Attraction",
-    "AttractionDetails", 
-    "BookingRequest",
-    "BookingResponse",
-    "AttractionsList",
-    "SearchFilters",
-    "Location",
-    "Coordinates",
+    "Movie",
+    "MovieList",
+    "MovieReview",
     # Utilities
-    "get_attraction_by_id",
+    "get_movie_by_id",
     "search_attractions",
     "parse_attraction_data",
     "format_attraction_name",
     "get_category_display_name",
-    "generate_booking_id", 
+    "generate_booking_id",
     "validate_visit_date",
     "validate_email",
     "format_attraction_details"
