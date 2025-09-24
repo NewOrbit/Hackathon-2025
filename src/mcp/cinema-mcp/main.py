@@ -17,7 +17,10 @@ from cinema_service import (
     search_movies_data,
     create_reservation_data,
     get_customer_reservations_data,
-    cancel_reservation_data
+    cancel_reservation_data,
+    get_all_reservations_data,
+    acknowledge_reservation_data,
+    revoke_reservation_data
 )
 
 mcp = FastMCP("Cinema", port=8010)
@@ -150,6 +153,67 @@ def cancel_reservation(
         Use get_my_reservations first to find the exact details of reservations to cancel
     """
     return cancel_reservation_data(customer_email, title, date, time, room)
+
+@mcp.tool()
+def get_all_reservations(status_filter: Optional[str] = None) -> Dict[str, Any]:
+    """Get all reservations for cinema employee review
+    
+    Args:
+        status_filter: Filter by status ("confirmed", "completed", "cancelled") or None for all active reservations
+        
+    Returns:
+        List of all reservations matching the filter for employee management
+        Use this to review current reservations that need attention
+    """
+    return get_all_reservations_data(status_filter)
+
+@mcp.tool()
+def acknowledge_reservation(
+    customer_email: str,
+    title: str,
+    date: str,
+    time: str,
+    room: str
+) -> Dict[str, Any]:
+    """Acknowledge/complete a reservation (cinema employee function)
+    
+    Args:
+        customer_email: Customer's email address
+        title: Exact movie title of the reservation
+        date: Date in YYYY-MM-DD format
+        time: Time in HH:MM format
+        room: Room identifier
+        
+    Returns:
+        Acknowledgment confirmation - marks reservation as completed
+        Use when customer has attended the showing
+    """
+    return acknowledge_reservation_data(customer_email, title, date, time, room)
+
+@mcp.tool()
+def revoke_reservation(
+    customer_email: str,
+    title: str,
+    date: str,
+    time: str,
+    room: str,
+    reason: Optional[str] = None
+) -> Dict[str, Any]:
+    """Revoke/cancel a reservation (cinema employee function)
+    
+    Args:
+        customer_email: Customer's email address
+        title: Exact movie title of the reservation to revoke
+        date: Date in YYYY-MM-DD format
+        time: Time in HH:MM format
+        room: Room identifier
+        reason: Reason for revocation (optional, for employee records)
+        
+    Returns:
+        Revocation confirmation and details about freed seats
+        Use when a reservation needs to be cancelled by cinema staff
+    """
+    return revoke_reservation_data(customer_email, title, date, time, room, reason)
 
 # Resources
 @mcp.resource("movie://{title}/{date}/{time}/{room}")
