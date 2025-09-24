@@ -1,0 +1,10 @@
+[project]
+name = "datastore-mcp"
+version = "0.1.0"
+description = "Local namespaced key-value datastore MCP server with token-efficient persistence (MessagePack)."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "mcp[cli]>=1.14.1",
+    "msgpack",
+]
