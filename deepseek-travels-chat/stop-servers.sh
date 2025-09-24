@@ -31,7 +31,7 @@ stop_server() {
 # Stop all servers
 stop_server "weather"
 stop_server "attractions"
-stop_server "travel-requirements" 
+stop_server "requirements" 
 stop_server "booking"
 
 echo ""
