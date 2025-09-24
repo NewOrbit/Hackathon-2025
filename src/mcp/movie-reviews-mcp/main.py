@@ -88,14 +88,29 @@ def search_and_format_movies(
     search_data = search_movies_data(genre, limit)
     return format_search_results(search_data)
 
+
+@mcp.tool()
+def get_movie_reviews_by_title(title: string) -> str:
+    """Get reviews for a movie by its title and return formatted results
+
+    Args:
+        title: Title of the movie
+
+    Returns:
+        Formatted string with movie reviews
+    """
+    # First, search for the movie by title to get its ID
+    search_data = search_movies(title=title, limit=1)
+    if not search_data or "movies" not in search_data or not search_data["movies"]:
+        return f"No movie found with title '{title}'."
+
+    movie_id = search_data["movies"][0]["id"]
+    reviews_data = get_movie_reviews_data(movie_id)
+    return format_review_list(reviews_data)
+
 # resources
 @mcp.resource("movie://{movie_id}")
 def get_movie_resource(movie_id: int) -> str:
-    """Get movie information as a formatted resource"""
-    return format_movie_resource(movie_id)
-
-@mcp.resource("movie://review/{movie_id}")
-def get_movie_reviews_resource(movie_id: int) -> str:
     """Get movie information as a formatted resource"""
     return format_movie_resource(movie_id)
 
