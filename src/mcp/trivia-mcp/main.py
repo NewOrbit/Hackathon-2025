@@ -20,7 +20,7 @@ from trivia_service import (
     format_nutrition_secrets,
 )
 
-mcp = FastMCP("Trivia", port=8012)
+mcp = FastMCP("Trivia", port=8013)
 
 
 # Nutrition trivia tools
