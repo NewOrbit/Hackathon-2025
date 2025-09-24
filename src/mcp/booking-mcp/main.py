@@ -148,8 +148,7 @@ def confirm_booking(
     return confirm_booking_mock(hold_id, payment_info)
 
 if __name__ == "__main__":
-    import uvicorn
     print("🎫 Starting Booking MCP Server on http://localhost:8011/mcp/")
     print("⚠️  Phase 1: Running in OFFLINE/MOCK mode only")
     print("⚠️  NO REAL BOOKINGS WILL BE MADE - ALL MOCK DATA")
-    uvicorn.run("main:mcp.app", host="127.0.0.1", port=8011, reload=True)
+    mcp.run(transport="streamable-http")

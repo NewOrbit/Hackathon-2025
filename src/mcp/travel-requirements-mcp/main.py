@@ -111,7 +111,6 @@ def check_travel_documents(
     return get_travel_documents_mock(destination_country, passport_country, departure_date, return_date)
 
 if __name__ == "__main__":
-    import uvicorn
     print("🛂 Starting Travel Requirements MCP Server on http://localhost:8010/mcp/")
     print("⚠️  Phase 1: Running in OFFLINE/MOCK mode only")
-    uvicorn.run("main:mcp.app", host="127.0.0.1", port=8010, reload=True)
+    mcp.run(transport="streamable-http")
