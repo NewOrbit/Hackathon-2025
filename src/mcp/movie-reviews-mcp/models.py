@@ -24,7 +24,7 @@ class Movie:
     rating: float
     durationMins: int
     year: int
-    genres: List[str]
+    genre: str
 
 @dataclass
 class MoviesList:

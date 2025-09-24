@@ -31,7 +31,6 @@ def get_movie_by_id(movie_id: int) -> Optional[Dict[str, Any]]:
 
 
 def search_movies(
-    title: Optional[str] = None,
     genre: Optional[str] = None,
     limit: int = 20
 ) -> Optional[Dict[str, Any]]:
@@ -43,14 +42,9 @@ def search_movies(
         # Filter by genre
         genre_match = True
         if genre:
-            genre_match = movie["genre"] == genre.lower()
+            genre_match = movie["genres"] == genre.lower()
 
-        # Filter by title
-        title_match = True
-        if title:
-            title_match = movie["title"] == title.lower()
-
-        if genre_match and title_match:
+        if genre_match:
             filtered_movies.append(movie)
 
     # Apply limit
@@ -74,9 +68,11 @@ def parse_movie_data(data: Dict[str, Any]) -> Movie:
     return Movie(
         id=data.get("id", 0),
         title=data.get("title", ""),
-        description=data.get("description", ""),
+        synopsis=data.get("synopsis", ""),
         genre=data.get("genre", ""),
         rating=data.get("rating"),
+        durationMins=data.get("durationMins", 0),
+        year=data.get("year", 0)
     )
 
 
