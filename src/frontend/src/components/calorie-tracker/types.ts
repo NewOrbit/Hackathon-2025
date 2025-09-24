@@ -107,10 +107,19 @@ export function isStepValid(form: FormState, stepIndex: number): boolean {
     if (!form.activityLevel || !form.goal) {
       return false;
     }
-    if (form.goal !== "maintain" && form.goal !== "") {
+    if (form.goal !== "maintain") {
       return form.weeklyRate === "" || !Number.isNaN(Number(form.weeklyRate));
     }
     return true;
   }
   return true;
+}
+
+export function subtractTotals(target: Totals, consumed: Totals): Totals {
+  return {
+    calories: target.calories - consumed.calories,
+    protein_g: target.protein_g - consumed.protein_g,
+    carbs_g: target.carbs_g - consumed.carbs_g,
+    fat_g: target.fat_g - consumed.fat_g,
+  };
 }

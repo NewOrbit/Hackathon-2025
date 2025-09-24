@@ -1,6 +1,11 @@
 import { MenuItem, Stack, TextField, Typography } from "@mui/material";
 
-import { FormState, activityLevels, goalOptions, GoalValue } from "./types";
+import {
+  type FormState,
+  activityLevels,
+  goalOptions,
+  type GoalValue,
+} from "./types";
 
 type FormStepProps = {
   stepIndex: number;

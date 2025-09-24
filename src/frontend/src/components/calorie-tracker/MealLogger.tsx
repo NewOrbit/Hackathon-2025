@@ -6,7 +6,15 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Totals, MealEntry } from "./types";
+import { type Totals, type MealEntry } from "./types";
+
+function formatTotals({ calories, protein_g, carbs_g, fat_g }: Totals) {
+  return `Calories: ${calories.toFixed(1)} kcal · Protein: ${protein_g.toFixed(1)} g · Carbs: ${carbs_g.toFixed(1)} g · Fat: ${fat_g.toFixed(1)} g`;
+}
+
+function formatRemaining(totals: Totals) {
+  return `Calories: ${Math.max(0, totals.calories).toFixed(1)} kcal · Protein: ${Math.max(0, totals.protein_g).toFixed(1)} g · Carbs: ${Math.max(0, totals.carbs_g).toFixed(1)} g · Fat: ${Math.max(0, totals.fat_g).toFixed(1)} g`;
+}
 
 type MealLoggerProps = {
   plan: string;
@@ -17,6 +25,7 @@ type MealLoggerProps = {
   onLogMeal: () => void;
   loading: boolean;
   error: string | null;
+  remaining?: Totals | null;
 };
 
 export function MealLogger({
@@ -28,6 +37,7 @@ export function MealLogger({
   onLogMeal,
   loading,
   error,
+  remaining,
 }: MealLoggerProps) {
   return (
     <Paper variant="outlined" sx={{ p: 3 }}>
@@ -67,13 +77,14 @@ export function MealLogger({
         </Alert>
       )}
 
-      <Stack spacing={2} sx={{ mt: 3 }}>
+      <Stack spacing={1.5} sx={{ mt: 3 }}>
         <Typography variant="subtitle1">Running totals</Typography>
-        <Typography color="text.secondary">
-          Calories: {totals.calories.toFixed(1)} kcal · Protein:{" "}
-          {totals.protein_g.toFixed(1)} g · Carbs: {totals.carbs_g.toFixed(1)} g
-          · Fat: {totals.fat_g.toFixed(1)} g
-        </Typography>
+        <Typography color="text.secondary">{formatTotals(totals)}</Typography>
+        {remaining && (
+          <Typography color="success.main" variant="body2">
+            Remaining today: {formatRemaining(remaining)}
+          </Typography>
+        )}
       </Stack>
 
       <Stack spacing={2} sx={{ mt: 3 }}>

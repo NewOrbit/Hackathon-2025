@@ -24,6 +24,10 @@ import {
 import { FormStep } from "./calorie-tracker/formStep";
 import { PlanCard } from "./calorie-tracker/PlanCard";
 import { MealLogger } from "./calorie-tracker/MealLogger";
+import {
+  calculateRemaining,
+  extractTargetsFromPlan,
+} from "./calorie-tracker/utils";
 
 function buildPlanPrompt(form: FormState) {
   return `You are an AI nutrition coach. Use the nutritional_plan compose_plan tool to calculate daily calories and macronutrients for this user.
@@ -79,6 +83,7 @@ export default function CalorieTracker() {
   const [plan, setPlan] = useState<string>("");
   const [planError, setPlanError] = useState<string | null>(null);
   const [planLoading, setPlanLoading] = useState(false);
+  const [planTargets, setPlanTargets] = useState<Totals | null>(null);
   const [mealInput, setMealInput] = useState("");
   const [mealLoading, setMealLoading] = useState(false);
   const [mealError, setMealError] = useState<string | null>(null);
@@ -122,10 +127,13 @@ export default function CalorieTracker() {
     if (!sessionId) return;
     setPlanLoading(true);
     setPlanError(null);
+    setPlanTargets(null);
     try {
       const prompt = buildPlanPrompt(form);
       const res = await sendMessage(sessionId, prompt);
-      setPlan(res.output.trim());
+      const markdown = res.output.trim();
+      setPlan(markdown);
+      setPlanTargets(extractTargetsFromPlan(markdown));
       setActiveStep(steps.length);
     } catch (error: any) {
       console.error(error);
@@ -181,6 +189,11 @@ export default function CalorieTracker() {
       setMealLoading(false);
     }
   };
+
+  const remaining = useMemo(
+    () => calculateRemaining(planTargets, totals),
+    [planTargets, totals]
+  );
 
   return (
     <Stack spacing={3} sx={{ width: "min(960px, 100%)", mx: "auto", py: 4 }}>
@@ -249,6 +262,7 @@ export default function CalorieTracker() {
             onBackToEdit={() => setActiveStep(steps.length - 1)}
             onReset={() => {
               setPlan("");
+              setPlanTargets(null);
               setTotals(initialTotals);
               setEntries([]);
               setMealInput("");
@@ -269,6 +283,7 @@ export default function CalorieTracker() {
           onLogMeal={handleLogMeal}
           loading={mealLoading}
           error={mealError}
+          remaining={remaining}
         />
       )}
     </Stack>
