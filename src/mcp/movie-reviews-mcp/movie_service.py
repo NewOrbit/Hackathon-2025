@@ -40,7 +40,7 @@ def search_movies_data(
         elif limit < 1:
             limit = 1
 
-        data = search_movies( genre, limit)
+        data = search_movies(genre, limit)
         if not data:
             return {"error": "No movies found matching the criteria"}
 
