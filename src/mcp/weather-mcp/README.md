@@ -5,6 +5,7 @@ A Model Context Protocol (MCP) server for getting comprehensive weather informat
 ## Features
 
 🌤️ **Current Weather**
+
 - Real-time weather conditions
 - Temperature with "feels like" values
 - Wind speed and direction
@@ -12,6 +13,7 @@ A Model Context Protocol (MCP) server for getting comprehensive weather informat
 - Precipitation information
 
 🌦️ **Weather Forecasts**
+
 - 1-16 day forecasts
 - Daily temperature ranges (min/max)
 - Apparent temperature forecasts
@@ -20,6 +22,7 @@ A Model Context Protocol (MCP) server for getting comprehensive weather informat
 - Weather condition descriptions
 
 🌍 **Global Coverage**
+
 - Worldwide location support
 - Automatic coordinate resolution
 - Timezone-aware data
@@ -44,19 +47,22 @@ uv run mcp dev main.py
 ```
 
 ```bash
-# use this when wanting to consume within an agent
+# use this when wanting to consume within an agent (HTTP on port 8009)
 uv run main.py
 ```
 
 ### Available Tools
 
 #### 1. Get Current Weather
+
 ```python
 get_current_weather(location: str)
 ```
+
 Get comprehensive current weather information including temperature, conditions, wind, humidity, and pressure.
 
 **Example:**
+
 ```python
 get_current_weather("London")
 get_current_weather("New York")
@@ -64,12 +70,15 @@ get_current_weather("Tokyo")
 ```
 
 #### 2. Get Weather Forecast
+
 ```python
 get_weather_forecast(location: str, days: int = 7)
 ```
+
 Get detailed weather forecast for 1-16 days with daily breakdowns.
 
 **Example:**
+
 ```python
 get_weather_forecast("Paris", days=5)
 get_weather_forecast("Sydney", days=14)
@@ -78,9 +87,11 @@ get_weather_forecast("Sydney", days=14)
 ### Resources
 
 Access weather data as resources:
+
 - `weather://{location}` - Current weather formatted as text resource
 
 **Example:**
+
 ```
 weather://London
 weather://San Francisco
@@ -89,73 +100,78 @@ weather://San Francisco
 ### Prompts
 
 #### 1. Weather Summary Prompt
+
 ```python
 weather_summary_prompt(location: str, include_forecast: bool = False)
 ```
+
 Generate prompts for weather summaries with practical advice.
 
 **Examples:**
+
 - `weather_summary_prompt("London")` - Current conditions with advice
 - `weather_summary_prompt("Tokyo", include_forecast=True)` - 3-day forecast with activities
 
 ## Data Structure
 
 ### Current Weather Response
+
 ```json
 {
-    "location": "London, England, United Kingdom",
-    "coordinates": {"lat": 51.5074, "lon": -0.1278},
-    "temperature": {
-        "current": 18.5,
-        "feels_like": 17.2,
-        "unit": "°C"
-    },
-    "weather": {
-        "description": "Partly cloudy",
-        "code": 2
-    },
-    "wind": {
-        "speed": 12.0,
-        "direction": 240.0,
-        "unit": "km/h"
-    },
-    "humidity": 65,
-    "pressure": 1013.2,
-    "precipitation": 0,
-    "timezone": "Europe/London",
-    "timestamp": "2024-01-15T14:30"
+  "location": "London, England, United Kingdom",
+  "coordinates": { "lat": 51.5074, "lon": -0.1278 },
+  "temperature": {
+    "current": 18.5,
+    "feels_like": 17.2,
+    "unit": "°C"
+  },
+  "weather": {
+    "description": "Partly cloudy",
+    "code": 2
+  },
+  "wind": {
+    "speed": 12.0,
+    "direction": 240.0,
+    "unit": "km/h"
+  },
+  "humidity": 65,
+  "pressure": 1013.2,
+  "precipitation": 0,
+  "timezone": "Europe/London",
+  "timestamp": "2024-01-15T14:30"
 }
 ```
 
 ### Forecast Response
+
 ```json
 {
-    "location": "Paris, Île-de-France, France",
-    "coordinates": {"lat": 48.8566, "lon": 2.3522},
-    "timezone": "Europe/Paris",
-    "forecast_days": 7,
-    "forecasts": [
-        {
-            "date": "2024-01-15",
-            "temperature": {"min": 8.2, "max": 15.7, "unit": "°C"},
-            "apparent_temperature": {"min": 6.1, "max": 14.2, "unit": "°C"},
-            "weather": {"description": "Light rain", "code": 61},
-            "precipitation": {
-                "total": 2.4,
-                "rain": 2.4,
-                "showers": 0,
-                "snow": 0,
-                "hours": 3,
-                "unit": "mm"
-            },
-            "wind": {
-                "speed": 18.5,
-                "direction": 225.0,
-                "max_gusts": 32.1,
-                "unit": "km/h"
-            }
-        }
-    ]
+  "location": "Paris, Île-de-France, France",
+  "coordinates": { "lat": 48.8566, "lon": 2.3522 },
+  "timezone": "Europe/Paris",
+  "forecast_days": 7,
+  "forecasts": [
+    {
+      "date": "2024-01-15",
+      "temperature": { "min": 8.2, "max": 15.7, "unit": "°C" },
+      "apparent_temperature": { "min": 6.1, "max": 14.2, "unit": "°C" },
+      "weather": { "description": "Light rain", "code": 61 },
+      "precipitation": {
+        "total": 2.4,
+        "rain": 2.4,
+        "showers": 0,
+        "snow": 0,
+        "hours": 3,
+        "unit": "mm"
+      },
+      "wind": {
+        "speed": 18.5,
+        "direction": 225.0,
+        "max_gusts": 32.1,
+        "unit": "km/h"
+      }
+    }
+  ]
 }
 ```
 
@@ -163,16 +179,16 @@ Generate prompts for weather summaries with practical advice.
 
 The API uses WMO Weather interpretation codes:
 
-| Code | Description |
-|------|-------------|
-| 0 | Clear sky |
-| 1-3 | Mainly clear to overcast |
-| 45-48 | Fog |
+| Code  | Description                 |
+| ----- | --------------------------- |
+| 0     | Clear sky                   |
+| 1-3   | Mainly clear to overcast    |
+| 45-48 | Fog                         |
 | 51-57 | Drizzle (light to freezing) |
-| 61-67 | Rain (slight to freezing) |
-| 71-77 | Snow (slight to heavy) |
-| 80-86 | Rain/snow showers |
-| 95-99 | Thunderstorms |
+| 61-67 | Rain (slight to freezing)   |
+| 71-77 | Snow (slight to heavy)      |
+| 80-86 | Rain/snow showers           |
+| 95-99 | Thunderstorms               |
 
 ## Example Usage
 
@@ -206,6 +222,7 @@ src/mcp/weather-mcp/
 ## API Integration
 
 This MCP integrates with the **Open-Meteo API**, providing:
+
 - **Free access** - No API key required
 - **Global coverage** - Weather data worldwide
 - **Reliable data** - Professional weather service
@@ -216,6 +233,7 @@ This MCP integrates with the **Open-Meteo API**, providing:
 ## Features by Module
 
 ### Models (`models.py`)
+
 - `Coordinates` - Latitude/longitude pairs
 - `Location` - Geographic location with timezone
 - `Temperature` - Current, min, max, feels-like values
@@ -227,17 +245,20 @@ This MCP integrates with the **Open-Meteo API**, providing:
 - `WeatherForecast` - Multi-day forecast collection
 
 ### Configuration (`config.py`)
+
 - API base URLs for weather and geocoding
 - Complete WMO weather code mappings
 - Standard units and formats
 
 ### Utilities (`utils.py`)
+
 - `make_api_request()` - HTTP request handling with timeouts
 - `get_coordinates()` - Location name to coordinates conversion
 - `format_location_name()` - Pretty location formatting
 - `get_weather_description()` - Weather code to description mapping
 
 ### Weather Service (`weather_service.py`)
+
 - `get_current_weather_data()` - Current conditions processing
 - `get_weather_forecast_data()` - Forecast data processing
 - `format_weather_resource()` - Resource text formatting
@@ -246,6 +267,7 @@ This MCP integrates with the **Open-Meteo API**, providing:
 ## Development
 
 The codebase follows a modular structure with clear separation of concerns:
+
 - **Models**: Data structures and type definitions
 - **Config**: Constants and API configuration
 - **Utils**: Reusable helper functions

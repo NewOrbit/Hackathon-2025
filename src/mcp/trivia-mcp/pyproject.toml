@@ -1,0 +1,9 @@
+[project]
+name = "trivia-mcp"
+version = "1.0.0"
+description = "MCP server for local secrets and insider information about attractions"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "mcp[cli]>=1.13.1",
+]
