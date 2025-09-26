@@ -1,0 +1,67 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Attractions MCP",
+			"type": "shell",
+			"command": "uv run main.py",
+			"options": {
+				"cwd": "${workspaceFolder}/src/mcp/attractions-mcp"
+			},
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Run Weather MCP",
+			"type": "shell",
+			"command": "uv run main.py",
+			"options": {
+				"cwd": "${workspaceFolder}/src/mcp/weather-mcp"
+			},
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Run All MCP Servers",
+			"dependsOrder": "parallel",
+			"dependsOn": [
+				"Run Attractions MCP",
+				"Run Weather MCP"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run Courses MCP",
+			"type": "shell",
+			"command": "uv run main.py",
+			"options": {
+				"cwd": "${workspaceFolder}/src/mcp/courses-mcp"
+			},
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Run HR MCP",
+			"type": "shell",
+			"command": "uv run main.py",
+			"options": {
+				"cwd": "${workspaceFolder}/src/mcp/hr-competency-mcp"
+			},
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "Run All Courses MCP Servers",
+			"dependsOrder": "parallel",
+			"dependsOn": [
+				"Run Courses MCP",
+				"Run HR MCP"
+			],
+			"group": "build"
+		}
+	]
+}
