@@ -1,0 +1,9 @@
+[project]
+name = "persist-packing-list-mcp"
+version = "1.0.0"
+description = "MCP server for persisting and managing travel packing lists"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "mcp[cli]>=1.13.1",
+]

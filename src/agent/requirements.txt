@@ -18,3 +18,7 @@ requests>=2.31.0
 python-dotenv>=1.0.0
 httpx>=0.26.0
 dotenv>=0.9.9
+
+fastapi==0.117.1
+fastapi-cli==0.0.13
+fastapi-cloud-cli==0.2.0

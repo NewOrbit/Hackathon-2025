@@ -1,0 +1,5 @@
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '.\attractions-mcp'; uv sync; uv run main.py"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '.\weather-mcp'; uv sync; uv run main.py"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '.\packing-suggestions-mcp'; uv sync; uv run main.py"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '.\endorsements-mcp'; uv sync; uv run main.py"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '.\persist-packing-list-mcp'; uv sync; uv run main.py"
