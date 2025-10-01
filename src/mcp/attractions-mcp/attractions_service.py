@@ -304,3 +304,80 @@ def format_search_results(search_data: Dict[str, Any]) -> str:
         result += f"... and {len(attractions) - 10} more attractions\n"
     
     return result
+
+
+def get_recommended_packing_list_data(attraction_id: int) -> Dict[str, Any]:
+    """Get recommended packing list for a specific attraction
+    
+    Args:
+        attraction_id: Unique ID of the attraction
+        
+    Returns:
+        Dictionary with attraction info and recommended packing list
+    """
+    try:
+        data = get_attraction_by_id(attraction_id)
+        if not data:
+            return {"error": f"Attraction with ID {attraction_id} not found"}
+        
+        attraction = parse_attraction_data(data)
+        packing_list = data.get("recommended_packing_list", [])
+        
+        # Enhanced packing recommendations based on attraction attributes
+        enhanced_packing = []
+        
+        # Add base packing list
+        enhanced_packing.extend(packing_list)
+        
+        # Add context-based recommendations
+        recommendations = []
+        
+        if data.get("outdoors", True):
+            recommendations.append("Weather protection (umbrella or raincoat)")
+            recommendations.append("Sun protection (sunscreen, hat)")
+        
+        if data.get("category") == "museums":
+            recommendations.append("Quiet shoes for museum floors")
+            recommendations.append("Notebook for taking notes")
+        
+        if data.get("category") == "beaches":
+            if "Swimsuit" not in packing_list:
+                recommendations.append("Swimsuit")
+            if "Towel" not in packing_list:
+                recommendations.append("Towel")
+        
+        if data.get("category") == "mountains":
+            recommendations.append("Warm layers")
+            recommendations.append("Sturdy footwear")
+        
+        if data.get("photogenic", True):
+            if not any("camera" in item.lower() for item in packing_list):
+                recommendations.append("Camera or smartphone")
+        
+        if data.get("time_needed", "").lower().find("full day") >= 0:
+            recommendations.append("Snacks and water")
+            recommendations.append("Portable charger")
+        
+        # Remove duplicates and combine lists
+        all_items = list(dict.fromkeys(enhanced_packing + recommendations))
+        
+        location_str = f"{attraction.location.city}, {attraction.location.country}"
+        
+        return {
+            "attraction_id": attraction_id,
+            "attraction_name": attraction.name,
+            "location": location_str,
+            "category": get_category_display_name(attraction.category),
+            "recommended_packing_list": all_items,
+            "original_packing_list": packing_list,
+            "additional_recommendations": recommendations,
+            "weather_considerations": {
+                "outdoors": data.get("outdoors", True),
+                "season_dependent": data.get("category") in ["beaches", "mountains", "natural"]
+            },
+            "visit_duration": data.get("time_needed", "Unknown"),
+            "special_notes": f"Pack according to {data.get('mood', 'general')} mood and {data.get('budget', 'medium')} budget expectations"
+        }
+        
+    except Exception as e:
+        return {"error": f"Failed to get packing list: {str(e)}"}
