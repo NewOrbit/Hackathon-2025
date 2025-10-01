@@ -5,18 +5,21 @@ A Model Context Protocol (MCP) server for discovering and booking tourist attrac
 ## Features
 
 🏛️ **Attraction Discovery**
+
 - Search attractions by location and category
 - Get detailed attraction information
 - Discover random famous attractions
 - Explore world wonders
 
 🎫 **Booking System**
+
 - Book attraction visits
 - Generate confirmation codes
 - Calculate estimated costs
 - Validate visit dates and requirements
 
 🗂️ **Categories Supported**
+
 - Historical Sites
 - Natural Wonders
 - Cultural Sites
@@ -46,37 +49,46 @@ uv run mcp dev main.py
 ```
 
 ```bash
-# use this when wanting to consume within an agent
+# use this when wanting to consume within an agent (HTTP on port 8008)
 uv run main.py
 ```
 
 ### Available Tools
 
 #### 1. Get Attraction Details
+
 ```python
 get_attraction_details(attraction_id: int)
 ```
+
 Get comprehensive information about a specific attraction including facilities, best visiting times, and reviews.
 
 #### 2. Search Attractions
+
 ```python
 search_attractions(location: str = None, category: str = None, limit: int = 20)
 ```
+
 Search for attractions with optional location and category filters.
 
 #### 3. Random Attraction Discovery
+
 ```python
 get_random_attraction(region: str = "famous")
 ```
+
 Get a random attraction for inspiration. Use `region="india"` for Indian attractions.
 
 #### 4. World Wonders
+
 ```python
 get_world_wonders()
 ```
+
 Get the list of world wonder attractions.
 
 #### 5. Book Attraction
+
 ```python
 book_attraction(
     attraction_id: int,
@@ -88,23 +100,29 @@ book_attraction(
     special_requirements: str = None
 )
 ```
+
 Book a visit to an attraction with confirmation.
 
 #### 6. Get Categories
+
 ```python
 get_attraction_categories()
 ```
+
 Get all available attraction categories for filtering.
 
 #### 7. Search and Format
+
 ```python
 search_and_format_attractions(location: str = None, category: str = None, limit: int = 10)
 ```
+
 Search attractions and return nicely formatted results.
 
 ### Resources
 
 Access attraction data as resources:
+
 - `attraction://{attraction_id}` - Specific attraction details
 - `attractions://search/{location}` - Attractions by location
 - `attractions://category/{category}` - Attractions by category
@@ -128,7 +146,7 @@ get_attraction_details(123)
 book_attraction(
     attraction_id=123,
     visitor_name="John Doe",
-    email="john@example.com", 
+    email="john@example.com",
     visit_date="2024-06-15",
     num_visitors=2
 )
@@ -154,6 +172,7 @@ src/mcp/attractions-mcp/
 ## Development
 
 The codebase follows a modular structure similar to the weather-mcp:
+
 - **Models**: Data structures for attractions and bookings
 - **Config**: Mock Data for attractions
 - **Utils**: Helper functions for API calls and validation

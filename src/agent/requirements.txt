@@ -18,3 +18,5 @@ requests>=2.31.0
 python-dotenv>=1.0.0
 httpx>=0.26.0
 dotenv>=0.9.9
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
