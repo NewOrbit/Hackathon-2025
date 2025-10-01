@@ -1,0 +1,11 @@
+[project]
+name = "travel-requirements-mcp"
+version = "0.1.0"
+description = "Travel Requirements MCP Server - baggage rules, security restrictions, visa requirements, travel documents"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "mcp[cli]>=1.13.1",
+    "pydantic>=2.0.0",
+    "fastapi>=0.104.0",
+]
